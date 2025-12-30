@@ -1,0 +1,90 @@
+version = 1
+include = [
+  "_includes/form_anchor_wario.toml",
+  "_includes/render_forge_pixellab.toml",
+  "_includes/physics_wario.toml",
+  "_includes/move_wario.toml",
+  "_includes/math_pixel_trunc_16.toml",
+  "_includes/jump_wario_dual_gravity.toml",
+  "_includes/actions_dash_wario.toml",
+]
+
+powerups = ["ember"]
+
+[name]
+id = "forge"
+display = "Forge"
+
+[form]
+id = "puppet"
+palette_base = "D4A373"
+palette_accent = "6C584C"
+variants = ["wario", "forge"]
+
+[form.colors]
+skin = "F5D0B5"
+glove = "F7F7F7"
+shoe = "7F5539"
+hat = "D4A373"
+overalls = "6C584C"
+emblem = "F7F7F7"
+moustache = "2D1E15"
+button = "F7F7F7"
+belt = "2D1E15"
+weapon = "E9C46A"
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = false
+
+[[actions.attacks]]
+id = "ember_shot"
+enabled = true
+input = "action2"
+type = "press"
+allow_air = true
+startup_frames = 0
+active_frames = 4
+cooldown_frames = 18
+damage = 1.0
+knockback_vx = 1.8
+knockback_vy = -2.2
+powerup = "ember"
+
+[actions.attacks.projectile]
+enabled = true
+speed = 2.6
+gravity = 0.05
+lifetime_frames = 90
+w = 8.0
+h = 8.0
+offset_x = 20.0
+offset_y = -8.0
+damage = 1.0
+knockback_vx = 2.2
+knockback_vy = -2.4
+
+[[actions.attacks]]
+id = "forge_smash"
+enabled = true
+input = "action2"
+type = "press"
+allow_air = false
+startup_frames = 4
+active_frames = 8
+cooldown_frames = 20
+damage = 2.0
+knockback_vx = 2.6
+knockback_vy = -3.2
+hitbox_w = 24.0
+hitbox_h = 16.0
+offset_x = 18.0
+offset_y = -6.0

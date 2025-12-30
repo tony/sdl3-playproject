@@ -1,0 +1,10 @@
+version = 1
+
+# Traverse the slope->solid seam where both surfaces meet at equal height.
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 45
+right = false

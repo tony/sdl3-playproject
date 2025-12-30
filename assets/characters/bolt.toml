@@ -1,0 +1,60 @@
+version = 1
+include = [
+  "_includes/form_anchor_sonic.toml",
+  "_includes/render_bolt_pixellab.toml",
+  "_includes/physics_sonic.toml",
+  "_includes/move_sonic.toml",
+  "_includes/math_pixel_trunc_256.toml",
+  "_includes/jump_sonic_clamp_vy.toml",
+  "_includes/actions_spindash_sonic.toml",
+  "_includes/states_rolling_sonic.toml",
+]
+
+[name]
+id = "bolt"
+display = "Bolt"
+
+[form]
+id = "puppet"
+palette_base = "2EC4B6"
+palette_accent = "FF9F1C"
+variants = ["sonic", "bolt"]
+
+[form.colors]
+skin = "FFD6A5"
+glove = "F5F5F5"
+hair = "2EC4B6"
+shoe = "FF6B35"
+shoe_stripe = "F5F5F5"
+goggle = "F5F5F5"
+bolt_mark = "FFE566"
+weapon = "FFE566"
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[[actions.attacks]]
+id = "spark_slash"
+enabled = true
+input = "action2"
+type = "press"
+allow_air = true
+startup_frames = 2
+active_frames = 6
+cooldown_frames = 14
+damage = 1.0
+knockback_vx = 1.8
+knockback_vy = -2.6
+hitbox_w = 18.0
+hitbox_h = 12.0
+offset_x = 20.0
+offset_y = -4.0

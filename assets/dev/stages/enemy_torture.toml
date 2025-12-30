@@ -1,0 +1,68 @@
+version = 1
+
+[stage]
+id = "enemy_torture"
+display = "Enemy Torture"
+
+[world]
+width = 800.0
+height = 520.0
+
+[render]
+bg_top = "0F0F14"
+bg_bottom = "202028"
+platform_base = "4C4C56"
+platform_light = "6C6C78"
+platform_dark = "30303A"
+platform_highlight = "8A8A96"
+
+[[solids]]
+x = 0.0
+y = 440.0
+w = 800.0
+h = 80.0
+
+[[solids]]
+x = 200.0
+y = 360.0
+w = 160.0
+h = 20.0
+
+[spawns.stomp]
+x = 240.0
+y = 280.0
+facing = 1
+
+[spawns.attack]
+x = 120.0
+y = 408.0
+facing = 1
+
+[[enemies]]
+x = 250.0
+y = 336.0
+facing = -1
+config = "assets/enemies/walker_basic.toml"
+
+[[enemies]]
+x = 154.0
+y = 416.0
+facing = -1
+config = "assets/enemies/spiky_basic.toml"
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 800.0
+h = 520.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

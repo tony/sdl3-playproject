@@ -1,0 +1,140 @@
+version = 1
+
+[stage]
+id = "tower_big"
+display = "Big Tower"
+
+[world]
+width = 1400.0
+height = 2400.0
+
+[render]
+bg_top = "090912"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+# Floor.
+[[solids]]
+x = 0.0
+y = 2320.0
+w = 1400.0
+h = 80.0
+
+# Base ramps into the tower area.
+[[slopes]]
+x = 220.0
+y = 2260.0
+w = 200.0
+h = 60.0
+dir = "up_right"
+
+[[slopes]]
+x = 420.0
+y = 2260.0
+w = 200.0
+h = 60.0
+dir = "up_left"
+
+# Central climb wall.
+[[solids]]
+x = 680.0
+y = 780.0
+w = 40.0
+h = 1540.0
+
+# Staggered ledges.
+[[solids]]
+x = 180.0
+y = 2120.0
+w = 260.0
+h = 24.0
+
+[[solids]]
+x = 920.0
+y = 1980.0
+w = 260.0
+h = 24.0
+
+[[solids]]
+x = 240.0
+y = 1820.0
+w = 300.0
+h = 24.0
+
+[[solids]]
+x = 880.0
+y = 1660.0
+w = 320.0
+h = 24.0
+
+# Catch ledge so the default spawn (120,120) lands within 120 frames in smokes.
+[[solids]]
+x = 0.0
+y = 1520.0
+w = 420.0
+h = 24.0
+
+[[solids]]
+x = 280.0
+y = 1480.0
+w = 360.0
+h = 24.0
+
+[[solids]]
+x = 820.0
+y = 1280.0
+w = 420.0
+h = 24.0
+
+[[solids]]
+x = 340.0
+y = 1060.0
+w = 460.0
+h = 24.0
+
+# Top landing.
+[[solids]]
+x = 540.0
+y = 860.0
+w = 360.0
+h = 24.0
+
+[spawns.default]
+x = 120.0
+y = 2288.0
+facing = 1
+
+[spawns.base_wall]
+x = 640.0
+y = 2288.0
+facing = 1
+
+[spawns.mid]
+x = 320.0
+y = 1420.0
+facing = 1
+
+[spawns.top]
+x = 640.0
+y = 820.0
+facing = 1
+
+[camera]
+deadzone_w = 320.0
+deadzone_h = 220.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 1400.0
+h = 2320.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

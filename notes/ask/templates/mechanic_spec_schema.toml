@@ -1,0 +1,330 @@
+# Game Mechanic Specification Schema v2.0
+# TOML structure for frame-accurate mechanic definitions
+#
+# This schema mirrors mechanic_spec_template_v2.md for machine-readable specs.
+# All timing values are in FRAMES at 60Hz unless noted.
+# All velocities are in px/frame (or subpx/frame with explicit scale).
+
+# ============================================================================
+# SECTION 0: ENGINE CONTRACT
+# ============================================================================
+
+[engine]
+tick_rate_hz = 60
+fixed_timestep = true
+sim_step_when_slow = "drop_frames"  # "drop_frames" | "run_multiple_sim_steps"
+input_sampling = "once_per_sim_tick"  # "once_per_sim_tick" | "event_accumulate_then_latch"
+
+[engine.numeric]
+position_format = "int_subpixel"  # "fixed_Q#.#" | "int_subpixel" | "float"
+position_scale = 256  # subpixel scale (1 pixel = 256 subpixels)
+velocity_format = "int_subpixel"
+velocity_scale = 256
+accel_format = "int_subpixel"
+accel_scale = 256
+rounding_mode = "trunc_toward_zero"  # "trunc_toward_zero" | "floor" | "round_nearest"
+integration = "pos += vel; vel += accel"
+
+[engine.direction]
+digital_from_analog = { deadzone = 0.3, snap_to_8way = true }
+socd_resolution = "neutral"  # "neutral" | "last_input_wins" | "prefer_left" | "prefer_right"
+
+# Frame pipeline order (mechanics declare which hook they evaluate at)
+[engine.pipeline]
+order = [
+  "InputLatch",
+  "DerivedInputUpdate",
+  "PrePhysicsStateUpdate",
+  "TriggerEval:PrePhysics",
+  "PhysicsIntegrate",
+  "CollisionResolve",
+  "ContactFlagsUpdate",
+  "TriggerEval:PostCollision",
+  "PostStateUpdate",
+  "AnimationStep",
+  "HitboxUpdate",
+  "TriggerEval:PostAnim",
+]
+
+# ============================================================================
+# SECTION 1: MECHANIC IDENTITY
+# ============================================================================
+
+[mechanic]
+name = ""
+source_games = []  # e.g., ["MMX2", "MMX3"]
+characters = []  # e.g., ["X", "Zero"]
+category = ""  # "Movement" | "Attack" | "Defense" | "Special" | "Cancel" | "System"
+complexity = ""  # "Basic" | "Intermediate" | "Advanced" | "Expert"
+
+# ============================================================================
+# SECTION 2: STATE/SIGNAL DICTIONARY
+# ============================================================================
+
+# Define what each prerequisite signal means
+[[signals]]
+name = "grounded"
+definition = "true iff foot_probe contacts solid OR snap_tolerance <= N"
+probe = "foot_probe"
+
+[[signals]]
+name = "wall_contact_left"
+definition = "true iff wall_probe_left overlaps solid"
+probe = "wall_probe_left"
+
+[[signals]]
+name = "wall_contact_right"
+definition = "true iff wall_probe_right overlaps solid"
+probe = "wall_probe_right"
+
+[[signals]]
+name = "wall_grip"
+definition = "state entered by wall slide rules, not just collision"
+
+# Sensor/probe definitions
+[[probes]]
+name = "foot_probe"
+position = "bottom-center"
+width = 2
+height = 1
+purpose = "ground detection"
+
+[[probes]]
+name = "wall_probe_left"
+position = "left-center"
+width = 1
+height = 8
+purpose = "left wall detection"
+
+[[probes]]
+name = "wall_probe_right"
+position = "right-center"
+width = 1
+height = 8
+purpose = "right wall detection"
+
+# ============================================================================
+# SECTION 3: INPUT MODEL
+# ============================================================================
+
+[input]
+# Anchor event defines "Frame 0" for this mechanic
+anchor_event = ""  # e.g., "Press(Jump)"
+simultaneous_tolerance = 0  # frames within anchor that count as "same time"
+pre_buffer_frames = 0  # input accepted before valid state
+post_grace_frames = 0  # input accepted after state ends (coyote)
+
+# Optional modules
+[input.motion_parser]
+enabled = false
+buffer_depth_frames = 30
+max_gap_between_steps = 10
+shortcut_patterns = []  # e.g., ["d,df,f = qcf"]
+negative_edge_allowed = false
+
+[input.charge_move]
+enabled = false
+charge_dirs = []  # e.g., ["down", "back"]
+required_frames = 0
+partition_grace_frames = 0
+broken_by = []  # e.g., ["neutral", "opposite", "hitstun"]
+persists_through = []  # e.g., ["jump", "normal_attack"]
+
+# ============================================================================
+# SECTION 4: ACTIVATION
+# ============================================================================
+
+[activation]
+# Which pipeline hook evaluates this trigger
+trigger_eval_hook = "PostCollision"  # "PrePhysics" | "PostCollision" | "PostState" | "PostAnim"
+
+# Boolean trigger equation (all must be true)
+# Uses predicates: Down(X), Press(X), Release(X), HeldFor(X,N), PressedWithin(X,N)
+trigger_conditions = []  # e.g., ["wall_grip", "Press(Jump)", "Down(Dash)"]
+
+# Values captured/latched on activation
+[activation.captured]
+facing = false
+wall_side = false
+input_dir = false
+velocity = false
+charge_level = false
+
+# Priority and consumption
+[activation.arbitration]
+priority_group = "Movement"  # "System" > "Damage" > "Special" > "Attack" > "Movement" > "Idle"
+priority_value = 0  # integer within group
+consumes_inputs = []  # e.g., ["Press(Jump)"]
+conflicts_with = []  # mutually exclusive mechanics
+fallback_if_blocked = "Ignore"  # "RemainInState" | "ConvertToOther" | "Ignore"
+
+# ============================================================================
+# SECTION 5: EXECUTION
+# ============================================================================
+
+[execution]
+model_type = "Parametric"  # "Parametric" | "TableDriven" | "Hybrid"
+
+# Parametric motion model
+[execution.parametric]
+# On-enter velocity changes
+on_enter_vx = { op = "set", value = 0.0 }  # op: "set" | "add" | "mul"
+on_enter_vy = { op = "set", value = 0.0 }
+
+# Per-frame velocity changes (during active state)
+per_frame_vx = { op = "add", value = 0.0 }
+per_frame_vy = { op = "add", value = 0.0 }
+
+gravity_scale = 1.0  # 0.0 = no gravity
+control_authority = 0.0  # 0.0 = locked, 1.0 = full control
+max_speed_x = 0.0  # px/frame
+max_speed_y = 0.0  # px/frame
+friction = 0.0  # px/frame²
+
+# Table-driven motion model (per-frame deltas)
+[[execution.table]]
+frame = 0
+dx = 0.0
+dy = 0.0
+flags = []  # "input_lock", "invuln", "hitbox_active", etc.
+
+# Phases
+[execution.phases]
+startup_frames = 0
+active_frames = 0
+recovery_frames = 0
+
+# Collision semantics
+[execution.collision]
+hitbox_model = "AABB_feet"  # "AABB_feet" | "AABB_center" | "Capsule" | "Probes"
+resize_anchor = "Bottom"  # "Bottom" | "Center" | "Top"
+resize_ordering = "ResizeThenResolve"  # "ResizeThenResolve" | "ResolveThenResize"
+ground_snap_px = 0
+wall_snap_px = 0
+ledge_snap_px = 0
+axis_resolve_order = "YThenX"  # "XThenY" | "YThenX"
+
+# Optional hitstop/freeze
+[execution.hitstop]
+frames = 0
+freeze_input_aging = false
+freeze_physics = false
+freeze_animation = false
+freeze_timers = false
+
+# Optional commitment/armor
+[execution.commitment]
+type = "Cancellable"  # "Cancellable" | "SoftCommit" | "HardCommit"
+super_armor_start = 0
+super_armor_end = 0
+damage_during_armor = false
+knockback_during_armor = "none"  # "immediate" | "delayed" | "none"
+
+# ============================================================================
+# SECTION 6: TERMINATION
+# ============================================================================
+
+[termination]
+# Natural end conditions
+[[termination.natural]]
+condition = "duration_expires"
+transition_to = ""
+
+[[termination.natural]]
+condition = "touches_ground"
+transition_to = ""
+
+# Interrupt/cancel windows
+[[termination.cancels]]
+source = "jump"
+window_start = 0
+window_end = -1  # -1 = entire duration
+preserves_velocity = "none"  # "none" | "partial" | "full"
+
+[[termination.cancels]]
+source = "damage"
+window_start = 0
+window_end = -1
+preserves_velocity = "none"
+
+# Post-action lockouts
+[termination.lockouts]
+same_action_frames = 0
+wall_regrab_frames = 0
+dash_frames = 0
+jump_frames = 0
+
+# ============================================================================
+# SECTION 7: MOMENTUM & INHERITANCE
+# ============================================================================
+
+[momentum]
+# Velocity inheritance formulas (evaluated on exit)
+vx_out_formula = "vx"  # expression using vx, vy, facing, etc.
+vy_out_formula = "vy"
+
+# When inheritance is calculated
+when_inherited = "OnExit"  # "PrePhysics" | "PostCollision" | "OnExit"
+clamps = []  # e.g., ["vx <= max_run_speed"]
+
+# Persistence
+velocity_persists_until = "new_action"  # "ground_contact" | "wall_contact" | "new_action" | "timer"
+decay_rate = 0.0  # px/frame² (if applicable)
+
+# ============================================================================
+# SECTION 8: EDGE CASES
+# ============================================================================
+
+[edge_cases]
+input_early_buffer_frames = 0
+input_late_grace_frames = 0
+ground_coyote_frames = 0
+wall_coyote_frames = 0
+ground_and_wall_same_frame = ""  # describe handling
+wall_and_ceiling_same_frame = ""
+regrab_lock_frames = 0
+subpixel_boundary_rounding = ""  # describe handling
+
+# Hooked exception rules
+[[edge_cases.hooks]]
+hook = "OnEnter"
+state = ""
+condition = ""
+action = ""
+
+# ============================================================================
+# SECTION 9: VERIFICATION ARTIFACTS
+# ============================================================================
+
+[verification]
+# Reference sources
+[[verification.sources]]
+type = "video"  # "video" | "tas" | "disassembly"
+reference = ""
+capture_conditions = ""
+
+# Golden trace (expected frame-by-frame values)
+[[verification.golden_trace]]
+frame = -2
+state = ""
+pos_x = 0.0
+pos_y = 0.0
+vel_x = 0.0
+vel_y = 0.0
+flags = []
+notes = ""
+
+# Test vectors (automatable input/output pairs)
+[[verification.test_vectors]]
+name = ""
+inputs = []  # e.g., [{ frame = 0, buttons = ["right", "dash"] }]
+expect_trigger_frame = 0
+expect_vx = 0.0
+expect_vy = 0.0
+
+# ============================================================================
+# SECTION 10: OPEN QUESTIONS
+# ============================================================================
+
+[open_questions]
+items = []  # list of unresolved ambiguities

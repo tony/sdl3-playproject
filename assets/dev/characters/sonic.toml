@@ -1,0 +1,34 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_sonic.toml",
+  "../../characters/_includes/form_anchor_sonic.toml",
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/physics_sonic.toml",
+  "../../characters/_includes/move_sonic.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_sonic_clamp_vy.toml",
+  "../../characters/_includes/actions_spindash_sonic.toml",
+  "../../characters/_includes/states_rolling_sonic.toml",
+]
+
+[name]
+id = "sonic"
+display = "Sonic"
+
+[form]
+id = "puppet"
+palette_base = "1870DC"
+palette_accent = "D4A017"
+variants = ["sonic"]
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.glide]
+enabled = false

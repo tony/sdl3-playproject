@@ -1,0 +1,8 @@
+[jump]
+enabled = true
+impulse = 4
+coyote_frames = 10
+jump_buffer_frames = 11
+variable_jump = true
+variable_cut_multiplier = 0.40
+fall_gravity_multiplier = 1.0

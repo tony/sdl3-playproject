@@ -1,0 +1,37 @@
+version = 1
+include = [
+  "../../characters/_includes/form_anchor_kirby.toml",
+  "../../characters/_includes/render_mario_placeholder.toml",
+  "../../characters/_includes/physics_kirby.toml",
+  "../../characters/_includes/move_kirby.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_kirby_impulse_3_5.toml",
+  "../../characters/_includes/actions_fly_kirby.toml",
+]
+
+[name]
+id = "kirby"
+display = "Kirby"
+
+[form]
+id = "puppet"
+palette_base = "FFB6C1"
+palette_accent = "E03030"
+variants = ["kirby"]
+
+[form.colors]
+cheek = "FF6B8A"
+glove = "FFB6C1"
+shoe = "E03030"
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.spindash]
+enabled = false
+
+[actions.glide]
+enabled = false

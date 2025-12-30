@@ -1,0 +1,9 @@
+[move]
+model = "instant"
+air_control = true
+accel_ground = 0.180556
+accel_air = 0.125
+decel_ground = 0.291667
+max_speed_ground = 0.75
+max_speed_air = 0.75
+turn_resistance = 0.08

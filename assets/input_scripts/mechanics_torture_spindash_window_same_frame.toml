@@ -1,0 +1,11 @@
+version = 1
+
+[[keyframes]]
+frame = 1
+right = true
+jump = true
+down = true
+
+[[keyframes]]
+frame = 11
+down = false

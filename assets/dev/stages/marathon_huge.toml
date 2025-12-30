@@ -1,0 +1,144 @@
+version = 1
+
+[stage]
+id = "marathon_huge"
+display = "Marathon Huge"
+
+[world]
+width = 24000.0
+height = 1200.0
+
+[render]
+bg_top = "07070C"
+bg_bottom = "141428"
+platform_base = "45454E"
+platform_light = "6A6A74"
+platform_dark = "25252C"
+platform_highlight = "8A8A94"
+
+# Main floor across the stage.
+[[solids]]
+x = 0.0
+y = 1120.0
+w = 24000.0
+h = 80.0
+
+# Start platforms.
+[[solids]]
+x = 360.0
+y = 1000.0
+w = 300.0
+h = 24.0
+
+[[solids]]
+x = 820.0
+y = 920.0
+w = 340.0
+h = 24.0
+
+# Early hills.
+[[slopes]]
+x = 2200.0
+y = 1040.0
+w = 320.0
+h = 140.0
+dir = "up_right"
+
+[[slopes]]
+x = 2520.0
+y = 1040.0
+w = 320.0
+h = 140.0
+dir = "up_left"
+
+# Mid wall + platform for wall-slide/climb characters.
+[[solids]]
+x = 6000.0
+y = 700.0
+w = 40.0
+h = 420.0
+
+[[solids]]
+x = 6240.0
+y = 840.0
+w = 380.0
+h = 24.0
+
+# Water segment (slower + lower jump).
+[[zones]]
+x = 7600.0
+y = 0.0
+w = 3200.0
+h = 1200.0
+type = "water"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 0.60
+max_speed_multiplier = 0.65
+friction_multiplier = 1.0
+jump_impulse_multiplier = 0.90
+
+# Ice segment (low friction).
+[[zones]]
+x = 12400.0
+y = 0.0
+w = 3200.0
+h = 1200.0
+type = "ice"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 0.08
+jump_impulse_multiplier = 1.0
+
+# End platforms.
+[[solids]]
+x = 17200.0
+y = 980.0
+w = 520.0
+h = 24.0
+
+[[solids]]
+x = 18240.0
+y = 860.0
+w = 420.0
+h = 24.0
+
+[[solids]]
+x = 19400.0
+y = 920.0
+w = 520.0
+h = 24.0
+
+[spawns.default]
+x = 120.0
+y = 200.0
+facing = 1
+
+[spawns.mid]
+x = 10000.0
+y = 200.0
+facing = 1
+
+[spawns.end]
+x = 23800.0
+y = 200.0
+facing = -1
+
+[camera]
+deadzone_w = 300.0
+deadzone_h = 180.0
+lookahead_x = 160.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 24000.0
+h = 1120.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

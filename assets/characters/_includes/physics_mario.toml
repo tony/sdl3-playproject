@@ -1,0 +1,5 @@
+[physics]
+gravity = 0.152778
+max_fall_speed = 16.67
+ground_friction = 3.0
+air_drag = 1.0

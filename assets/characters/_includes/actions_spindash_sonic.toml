@@ -1,0 +1,9 @@
+[actions.spindash]
+enabled = true
+type = "hold"
+input = "jump"
+require_down = true
+charge_frames = 62
+min_launch_speed = 3.50
+max_launch_speed = 6
+tap_boost_frames = 10

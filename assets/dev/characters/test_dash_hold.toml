@@ -1,0 +1,36 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_megamanx_placeholder.toml",
+  "../../characters/_includes/render_anims_dash_rotate_45.toml",
+  "../../characters/_includes/physics_megaman_instant.toml",
+  "../../characters/_includes/move_megaman_instant.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_megaman_impulse_2_33.toml",
+]
+
+[name]
+id = "test_dash_hold"
+display = "Dash Hold (Short)"
+
+[form]
+id = "puppet"
+
+[actions.dash]
+enabled = true
+type = "hold"
+hold_frames = 6
+cooldown_frames = 0
+dash_speed = 3.0
+dash_time_frames = 12
+allow_air = false
+air_dashes = 0
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false

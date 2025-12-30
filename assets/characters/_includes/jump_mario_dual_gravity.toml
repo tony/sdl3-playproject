@@ -1,0 +1,11 @@
+[jump]
+enabled = true
+model = "dual_gravity"
+impulse = 3.67
+coyote_frames = 10
+jump_buffer_frames = 14
+variable_jump = true
+variable_cut_multiplier = 0.35
+fall_gravity_multiplier = 1.25
+rise_gravity_multiplier_held = 0.85
+rise_gravity_multiplier_released = 1.5

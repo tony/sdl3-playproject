@@ -1,0 +1,4 @@
+version = 1
+
+# No input; keep all buttons released.
+keyframes = []

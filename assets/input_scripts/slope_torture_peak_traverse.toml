@@ -1,0 +1,10 @@
+version = 1
+
+# Traverse across the up_right->up_left peak seam.
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 25
+right = false

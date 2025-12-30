@@ -1,0 +1,26 @@
+version = 1
+
+[enemy]
+id = "walker_basic"
+display = "Walker"
+type = "walker"
+
+[collision]
+w = 24
+h = 20
+
+[move]
+speed = 0.6
+gravity = 0.2
+max_fall_speed = 4.0
+turn_on_wall = true
+turn_on_edge = true
+
+[combat]
+health = 1
+contact_damage = 1
+stompable = true
+stomp_bounce_vy = -4.0
+iframes_ms = 250
+knockback_vx = 1.5
+knockback_vy = -2.5

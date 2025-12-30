@@ -1,0 +1,9 @@
+[actions.dash]
+enabled = true
+type = "press"
+input = "action1"
+cooldown_frames = 0
+dash_time_frames = 17
+dash_speed = 9.17
+allow_air = true
+air_dashes = 1

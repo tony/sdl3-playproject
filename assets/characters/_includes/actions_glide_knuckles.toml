@@ -1,0 +1,7 @@
+[actions.glide]
+enabled = true
+type = "hold"
+input = "jump"
+start_on_press = true
+gravity_multiplier = 0.25
+max_fall_speed = 4.33

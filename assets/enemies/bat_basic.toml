@@ -1,0 +1,61 @@
+version = 1
+
+[enemy]
+id = "bat_basic"
+display = "Bat"
+type = "hopper"
+
+[collision]
+w = 20
+h = 16
+
+[move]
+speed = 0.5
+gravity = 0.15
+max_fall_speed = 3.0
+turn_on_wall = true
+turn_on_edge = false
+
+[combat]
+health = 1
+contact_damage = 1
+stompable = true
+stomp_bounce_vy = -4.0
+iframes_ms = 250
+knockback_vx = 1.8
+knockback_vy = -2.0
+
+[hopper]
+interval_frames = 45
+hop_speed_x = 0.6
+hop_speed_y = -3.5
+
+[render]
+frame_w = 64
+frame_h = 64
+scale = 2.0
+offset_y = 38.0
+
+[render.sheets]
+east = "assets/sprites/pixellab/sheets/bat_east.png"
+west = "assets/sprites/pixellab/sheets/bat_west.png"
+
+[render.anims.idle]
+row = 0
+frames = 4
+fps = 8.0
+
+[render.anims.walk]
+row = 1
+frames = 6
+fps = 10.0
+
+[render.anims.fly]
+row = 2
+frames = 9
+fps = 14.0
+
+[render.anims.hurt]
+row = 3
+frames = 6
+fps = 12.0

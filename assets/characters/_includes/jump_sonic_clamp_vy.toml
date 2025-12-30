@@ -1,0 +1,10 @@
+[jump]
+enabled = true
+model = "clamp_vy"
+impulse = 4
+coyote_frames = 11
+jump_buffer_frames = 11
+variable_jump = true
+variable_cut_multiplier = 0.45
+fall_gravity_multiplier = 1.25
+release_clamp_vy = 2.0

@@ -1,0 +1,59 @@
+version = 1
+include = [
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/physics_sonic.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_sonic_clamp_vy.toml",
+]
+
+[name]
+id = "tails"
+display = "Tails"
+
+[form]
+id = "puppet"
+palette_base = "FFA500"
+palette_accent = "FFFFFF"
+variants = ["tails"]
+
+[form.colors]
+chest = "FFFFFF"
+glove = "F0F0F0"
+shoe = "E03030"
+tail_tip = "FFFFFF"
+
+[form.anchor_deltas]
+head = [0, 1]
+body = [0, 1]
+hand_front = [0, 1]
+hand_back = [0, 1]
+
+[move]
+accel_ground = 0.159722
+accel_air = 0.097222
+decel_ground = 0.180556
+max_speed_ground = 2.83
+max_speed_air = 2.67
+turn_resistance = 0.22
+
+[jump]
+release_clamp_vy = 2.5
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.spindash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.fly]
+enabled = true
+type = "hold"
+input = "action2"
+up_accel = 0.194444
+max_up_speed = 2.17

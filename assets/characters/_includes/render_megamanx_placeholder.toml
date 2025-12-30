@@ -1,0 +1,5 @@
+[render]
+sheet = "assets/sprites/megamanx_placeholder.bmp"
+frame_w = 32
+frame_h = 32
+scale = 1.0

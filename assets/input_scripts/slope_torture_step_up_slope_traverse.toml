@@ -1,0 +1,10 @@
+version = 1
+
+# Move from the flat floor onto a slope that begins slightly above it (step-up onto slope).
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 25
+right = false

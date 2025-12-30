@@ -1,0 +1,39 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/physics_sonic.toml",
+  "../../characters/_includes/move_sonic.toml",
+  "../../characters/_includes/jump_sonic_clamp_vy.toml",
+]
+
+[name]
+id = "test_subpixel256"
+display = "Test (subpixel 256)"
+
+[form]
+id = "puppet"
+
+[math]
+subpixel = 256
+collision_snap = "subpixel"
+quantize = "trunc"
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = true
+type = "hold"
+charge_frames = 62
+min_launch_speed = 3.50
+max_launch_speed = 6

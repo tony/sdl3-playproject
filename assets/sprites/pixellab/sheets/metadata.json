@@ -1,0 +1,323 @@
+{
+  "bat": {
+    "enemy": "bat",
+    "frame_size": 64,
+    "max_frames": 9,
+    "directions": {
+      "south": {
+        "sheet": "pixellab/sheets/bat_south.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "fly": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      },
+      "west": {
+        "sheet": "pixellab/sheets/bat_west.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "fly": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      },
+      "east": {
+        "sheet": "pixellab/sheets/bat_east.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "fly": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      },
+      "north": {
+        "sheet": "pixellab/sheets/bat_north.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "fly": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      }
+    }
+  },
+  "skeleton": {
+    "enemy": "skeleton",
+    "frame_size": 64,
+    "max_frames": 7,
+    "directions": {
+      "south": {
+        "sheet": "pixellab/sheets/skeleton_south.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "attack": {
+            "row": 2,
+            "frames": 6,
+            "source": "cross-punch"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 7,
+            "source": "falling-back-death"
+          }
+        }
+      },
+      "west": {
+        "sheet": "pixellab/sheets/skeleton_west.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "attack": {
+            "row": 2,
+            "frames": 6,
+            "source": "cross-punch"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 7,
+            "source": "falling-back-death"
+          }
+        }
+      },
+      "east": {
+        "sheet": "pixellab/sheets/skeleton_east.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "attack": {
+            "row": 2,
+            "frames": 6,
+            "source": "cross-punch"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 7,
+            "source": "falling-back-death"
+          }
+        }
+      },
+      "north": {
+        "sheet": "pixellab/sheets/skeleton_north.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking-6-frames"
+          },
+          "attack": {
+            "row": 2,
+            "frames": 6,
+            "source": "cross-punch"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 7,
+            "source": "falling-back-death"
+          }
+        }
+      }
+    }
+  },
+  "slime": {
+    "enemy": "slime",
+    "frame_size": 64,
+    "max_frames": 9,
+    "directions": {
+      "south": {
+        "sheet": "pixellab/sheets/slime_south.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking"
+          },
+          "jump": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      },
+      "west": {
+        "sheet": "pixellab/sheets/slime_west.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking"
+          },
+          "jump": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      },
+      "east": {
+        "sheet": "pixellab/sheets/slime_east.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking"
+          },
+          "jump": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      },
+      "north": {
+        "sheet": "pixellab/sheets/slime_north.png",
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "source": "breathing-idle"
+          },
+          "walk": {
+            "row": 1,
+            "frames": 6,
+            "source": "walking"
+          },
+          "jump": {
+            "row": 2,
+            "frames": 9,
+            "source": "jumping-1"
+          },
+          "hurt": {
+            "row": 3,
+            "frames": 6,
+            "source": "taking-punch"
+          }
+        }
+      }
+    }
+  }
+}

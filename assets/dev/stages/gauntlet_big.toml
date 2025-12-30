@@ -1,0 +1,149 @@
+version = 1
+
+[stage]
+id = "gauntlet_big"
+display = "Big Gauntlet"
+
+[world]
+width = 12000.0
+height = 900.0
+
+[render]
+bg_top = "0C0C10"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+# Main floor across the stage.
+[[solids]]
+x = 0.0
+y = 820.0
+w = 12000.0
+h = 80.0
+
+# Start platforms.
+[[solids]]
+x = 360.0
+y = 700.0
+w = 260.0
+h = 24.0
+
+[[solids]]
+x = 760.0
+y = 620.0
+w = 320.0
+h = 24.0
+
+# A wall jump/slide section.
+[[solids]]
+x = 2000.0
+y = 520.0
+w = 40.0
+h = 300.0
+
+[[solids]]
+x = 2120.0
+y = 480.0
+w = 260.0
+h = 24.0
+
+# Rolling hills.
+[[slopes]]
+x = 3400.0
+y = 700.0
+w = 240.0
+h = 120.0
+dir = "up_right"
+
+[[slopes]]
+x = 3640.0
+y = 700.0
+w = 240.0
+h = 120.0
+dir = "up_left"
+
+[[slopes]]
+x = 4120.0
+y = 720.0
+w = 200.0
+h = 100.0
+dir = "up_right"
+
+[[slopes]]
+x = 4320.0
+y = 720.0
+w = 200.0
+h = 100.0
+dir = "up_left"
+
+# Mid platforms + a tall climb wall.
+[[solids]]
+x = 5600.0
+y = 660.0
+w = 380.0
+h = 24.0
+
+[[solids]]
+x = 6120.0
+y = 460.0
+w = 40.0
+h = 360.0
+
+[[solids]]
+x = 6260.0
+y = 580.0
+w = 360.0
+h = 24.0
+
+# End platforms.
+[[solids]]
+x = 10400.0
+y = 660.0
+w = 420.0
+h = 24.0
+
+[[solids]]
+x = 11100.0
+y = 600.0
+w = 380.0
+h = 24.0
+
+[[solids]]
+x = 11700.0
+y = 540.0
+w = 260.0
+h = 24.0
+
+[spawns.default]
+x = 120.0
+y = 200.0
+facing = 1
+
+[spawns.mid]
+x = 6000.0
+y = 200.0
+facing = 1
+
+[spawns.end]
+x = 11800.0
+y = 200.0
+facing = -1
+
+[camera]
+deadzone_w = 260.0
+deadzone_h = 160.0
+lookahead_x = 140.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 12000.0
+h = 840.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

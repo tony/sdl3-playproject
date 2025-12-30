@@ -1,0 +1,54 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_mario_placeholder.toml",
+  "../../characters/_includes/physics_mario.toml",
+  "../../characters/_includes/move_mario.toml",
+  "../../characters/_includes/math_pixel_trunc_16.toml",
+  "../../characters/_includes/jump_mario_dual_gravity.toml",
+]
+
+[name]
+id = "mario"
+display = "Mario"
+
+[form]
+id = "puppet"
+palette_base = "E52521"
+palette_accent = "0055A4"
+variants = ["mario"]
+
+[form.colors]
+skin = "FFCC99"
+hat = "E52521"
+overalls = "0055A4"
+emblem = "FFFFFF"
+moustache = "1A1A1A"
+button = "FFD700"
+
+[form.anchor_deltas]
+head = [0, 2]
+body = [0, 1]
+arm_front = [0, 1]
+arm_back = [0, 1]
+hand_front = [0, 1]
+hand_back = [0, 1]
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = false
+type = "hold"
+charge_frames = 55
+min_launch_speed = 2
+max_launch_speed = 5.42

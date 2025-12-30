@@ -1,0 +1,85 @@
+version = 1
+
+[stage]
+id = "mechanics_torture"
+display = "Mechanics Torture"
+
+[world]
+width = 2000.0
+height = 600.0
+
+[render]
+bg_top = "0C0C10"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+# Left floor (coyote ledge + one-way drop area)
+[[solids]]
+x = 0.0
+y = 500.0
+w = 600.0
+h = 80.0
+
+# Right floor (landing after the coyote gap)
+[[solids]]
+x = 740.0
+y = 500.0
+w = 1260.0
+h = 80.0
+
+# One-way platform for drop-through checks.
+[[solids]]
+x = 260.0
+y = 340.0
+w = 220.0
+h = 20.0
+one_way = true
+
+[spawns.default]
+x = 120.0
+y = 468.0
+
+[spawns.one_way_drop]
+x = 320.0
+y = 308.0
+facing = 1
+
+[spawns.coyote]
+x = 420.0
+y = 468.0
+facing = 1
+
+[spawns.jump_buffer]
+x = 120.0
+y = 338.0
+facing = 1
+
+[spawns.glide_fall]
+x = 120.0
+y = 100.0
+facing = 1
+
+[spawns.fly_rise]
+x = 120.0
+y = 300.0
+facing = 1
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 2000.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

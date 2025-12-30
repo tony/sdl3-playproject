@@ -1,0 +1,47 @@
+version = 1
+
+[stage]
+id = "hazards_lockout_torture"
+display = "Hazards Lockout Torture"
+
+[world]
+width = 2000.0
+height = 600.0
+
+[[solids]]
+x = 0.0
+y = 500.0
+w = 2000.0
+h = 80.0
+
+[spawns.default]
+x = 1200.0
+y = 468.0
+facing = 1
+
+[[hazards]]
+x = 1180.0
+y = 0.0
+w = 400.0
+h = 600.0
+iframes_ms = 5000
+lockout_ms = 300
+knockback_vx = 6.0
+knockback_vy = 0.0
+
+[camera]
+deadzone_w = 0.0
+deadzone_h = 0.0
+lookahead_x = 0.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 2000.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

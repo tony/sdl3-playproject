@@ -1,14 +1,14 @@
 # AGENTS.md
 
-This file captures the rules and conventions for both humans and AI agents
-working in this repository.
+This file captures the rules and conventions for both humans and AI agents working in this repository.
 
 ## Project Philosophy
 
 - This repository is a sandbox, not a general-purpose engine.
 - Prefer explicit, boring C++ over clever abstractions.
+- Data-driven behavior beats inheritance-heavy designs.
 - SDL3 is treated as a platform API, not a framework.
-- Keep systems small and purpose-built; avoid meta-architectures.
+- ECS is minimal and purpose-built; avoid meta-architectures.
 
 ## Language and Tooling
 
@@ -48,26 +48,80 @@ sudo apt install -y \
 
 ## Directory Ownership
 
-- `core/`: Application lifecycle, timing, input, rendering, and top-level orchestration.
-- New subsystems should live in their own top-level directory (e.g., `audio/`, `ui/`).
+- `core/`: Application lifecycle, timing, and top-level orchestration. No gameplay or character logic.
+- `ecs/`: Entities, components, and systems. Components are passive data; systems own behavior.
+- `stage/`: Level geometry, collision surfaces, and spawn logic. No character-specific rules.
+- `character/`: Character movement, abilities, and configuration. Must remain data-driven via TOML.
+- `assets/`: Runtime data only (TOML, art placeholders, etc.). No behavior assumptions encoded in code.
+
+## Character Framework Rules
+
+- Character behavior must be configurable via TOML.
+- Adding a new character must not require new subclasses.
+- Differences between characters are expressed via:
+  - Numeric parameters
+  - Feature flags
+  - Action configuration
+- Actions (jump, dash, spin, fly, etc.):
+  - Are optional
+  - Are parameterized
+  - Are evaluated from `InputState`, not hard-coded key checks
+- The controller remains generic and deterministic.
+
+## ECS Rules of the Road
+
+- Entities are lightweight IDs.
+- Components contain no logic.
+- Systems:
+  - Operate over explicit component sets
+  - Are deterministic given input + config
+  - Do not silently create or destroy entities
+- **Exception:** EnTT is allowed as the ECS foundation—it provides the registry,
+  views, and entity management. Custom "meta-architectures" built on top are still discouraged.
+- EnTT's compile-time features are acceptable; avoid additional template metaprogramming layers.
+- Favor clarity, debuggability, and predictable data flow.
 
 ## Input Handling
 
-- SDL input is normalized in one place.
-- Gameplay/logic consumes normalized input data and never polls SDL directly.
-- Input timing (pressed, held, released) should be explicit.
+- SDL input is normalized into `InputState` components.
+- SDL key mappings live in one place only.
+- Gameplay systems consume input data; they never poll SDL directly.
+- Input timing (pressed, held, released) is explicit.
+
+## Physics and Collision
+
+- Collision resolution favors stability and feel over realism.
+- Platformer concepts (grounded state, coyote time, jump buffering) are first-class.
+- No magic numbers without a named constant or config field.
+- Any non-obvious physics tweak requires a comment explaining intent.
 
 ## Rendering
 
-- Rendering is separate from simulation.
+- Rendering is strictly separate from simulation.
 - Render code must never mutate gameplay state.
 - Debug rendering is allowed but must be clearly scoped and optional.
+- SDL rendering APIs should not leak into gameplay systems.
+
+## Configuration (TOML)
+
+- TOML files are part of the public API of the sandbox.
+- Backwards compatibility matters once a field ships.
+- Prefer additive changes over semantic changes.
+- Defaults must be defined in code and match expected behavior.
 
 ## AI / Agent Contributions
 
 - AI-generated code is held to the same standard as human-written code.
 - No bulk rewrites without explicit intent.
+- Any AI-related rule changes use `ai(rules[...])` commit types.
 - Generated code must be understandable without access to the prompt.
+
+## What This Repo Is Not
+
+- Not a full-featured game engine.
+- Not a physics research project.
+- Not a rendering showcase.
+- Not optimized for speculative extensibility.
 
 ## Git Commit Standards
 
@@ -81,8 +135,7 @@ what:
 - Focused on a single topic
 ```
 
-Commit titles start with a **lowercase** commit type. Use uppercase only for
-properly-capitalized identifiers (e.g. class names) inside the scope.
+Commit titles start with a **lowercase** commit type. Use uppercase only for properly-capitalized identifiers (e.g. class names) inside the scope.
 
 Common commit types:
 - **feat**: New features or enhancements
@@ -95,3 +148,14 @@ Common commit types:
 - **js(deps)**: Dependencies
 - **js(deps[dev])**: Dev Dependencies
 - **ai(rules[LLM type])**: AI Rule Updates
+
+Example:
+```
+feat(store[search/mobx]) Add bidirectional sync for filter directives
+
+why: Keep search input and filter UI in sync when toggling de minimis
+what:
+- Add directive sync to toggleDeMinimis action
+- Update search input when filter changes programmatically
+- Add tests for bidirectional sync behavior
+```

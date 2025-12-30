@@ -1,0 +1,19 @@
+version = 1
+
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 8
+jump = true
+
+[[keyframes]]
+frame = 9
+jump = false
+
+# Attempt to reverse direction mid-air. With high turn_resistance_air, vx should stay positive.
+[[keyframes]]
+frame = 12
+right = false
+left = true

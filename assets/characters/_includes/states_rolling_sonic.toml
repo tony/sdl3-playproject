@@ -1,0 +1,9 @@
+[states.rolling]
+enabled = true
+auto_start_after_spindash = true
+hitbox_w = 24.0
+hitbox_h = 22.0
+friction_multiplier = 0.5
+stop_speed = 0.25
+disable_air_control = true
+allow_jump = true

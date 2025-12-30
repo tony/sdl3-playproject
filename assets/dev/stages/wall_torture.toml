@@ -1,0 +1,62 @@
+version = 1
+
+[stage]
+id = "wall_torture"
+display = "Wall Torture"
+
+[world]
+width = 1200.0
+height = 600.0
+
+[render]
+bg_top = "0C0C10"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+[[solids]]
+x = 0.0
+y = 500.0
+w = 1200.0
+h = 80.0
+
+# Tall wall for wall slide / wall jump tests.
+[[solids]]
+x = 600.0
+y = 200.0
+w = 40.0
+h = 300.0
+
+[spawns.default]
+x = 120.0
+y = 468.0
+facing = 1
+
+[spawns.air_wall]
+x = 576.0
+y = 200.0
+facing = 1
+
+[spawns.air_wall_low]
+x = 576.0
+y = 360.0
+facing = 1
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

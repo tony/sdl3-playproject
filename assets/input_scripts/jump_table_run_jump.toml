@@ -1,0 +1,9 @@
+version = 1
+
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 1
+jump = true

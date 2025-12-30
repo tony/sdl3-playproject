@@ -1,0 +1,10 @@
+version = 1
+
+# Move across the solid->slope transition near the far-right “subpixel seam”.
+[[keyframes]]
+frame = 0
+left = true
+
+[[keyframes]]
+frame = 40
+left = false

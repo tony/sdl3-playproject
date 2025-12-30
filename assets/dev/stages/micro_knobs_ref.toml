@@ -1,0 +1,295 @@
+version = 1
+
+[stage]
+id = "micro_knobs_ref"
+display = "Micro Knobs Ref"
+
+[world]
+width = 3200.0
+height = 600.0
+
+[render]
+bg_top = "0C0C10"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+# Reference stage for micro-knob regression scripts.
+[[solids]]
+x = 0.0
+y = 500.0
+w = 3200.0
+h = 80.0
+
+# Low ceiling tunnel (rolling hitbox smoke).
+[[solids]]
+x = 2920.0
+y = 430.0
+w = 140.0
+h = 40.0
+
+[spawns.default]
+x = 120.0
+y = 468.0
+facing = 1
+
+[spawns.max_fall]
+x = 250.0
+y = 120.0
+facing = 1
+
+[spawns.jump_impulse]
+x = 440.0
+y = 468.0
+facing = 1
+
+[spawns.heavy_gravity]
+x = 680.0
+y = 468.0
+facing = 1
+
+[spawns.water]
+x = 920.0
+y = 468.0
+facing = 1
+
+[spawns.friction]
+x = 1210.0
+y = 468.0
+facing = 1
+
+[spawns.ground_friction]
+x = 1350.0
+y = 468.0
+facing = 1
+
+[spawns.max_speed]
+x = 1530.0
+y = 468.0
+facing = 1
+
+[spawns.low_accel]
+x = 1700.0
+y = 468.0
+facing = 1
+
+[spawns.ice]
+x = 1920.0
+y = 468.0
+facing = 1
+
+[spawns.air_drag]
+x = 2520.0
+y = 468.0
+facing = 1
+
+[spawns.turn_resist]
+x = 2880.0
+y = 468.0
+facing = 1
+
+[spawns.roll_tunnel]
+x = 2840.0
+y = 468.0
+facing = 1
+
+# Jump impulse: reduced takeoff height.
+[[zones]]
+x = 320.0
+y = 0.0
+w = 240.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 0.5
+
+# Max fall speed: slow terminal velocity.
+[[zones]]
+x = 200.0
+y = 0.0
+w = 100.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 0.25
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Gravity: faster falls and reduced jump apex.
+[[zones]]
+x = 560.0
+y = 0.0
+w = 240.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.8
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Water: slowed movement + reduced speed cap.
+[[zones]]
+x = 800.0
+y = 0.0
+w = 400.0
+h = 600.0
+type = "water"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 0.5
+max_speed_multiplier = 0.5
+friction_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Friction: stronger deceleration.
+[[zones]]
+x = 1200.0
+y = 0.0
+w = 120.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 2.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Ground friction: reduced deceleration while grounded.
+[[zones]]
+x = 1320.0
+y = 0.0
+w = 140.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 0.25
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Max speed: reduced horizontal cap.
+[[zones]]
+x = 1460.0
+y = 0.0
+w = 140.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 0.5
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Accel: reduced ground/air acceleration.
+[[zones]]
+x = 1600.0
+y = 0.0
+w = 200.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 0.3
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Ice: low ground friction.
+[[zones]]
+x = 1800.0
+y = 0.0
+w = 600.0
+h = 600.0
+type = "ice"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 0.10
+air_drag_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Air drag: increases airborne deceleration.
+[[zones]]
+x = 2400.0
+y = 0.0
+w = 400.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 4.0
+jump_impulse_multiplier = 1.0
+
+# Turn resistance: remove reversal penalty.
+[[zones]]
+x = 2800.0
+y = 0.0
+w = 400.0
+h = 600.0
+type = "custom"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 1.0
+ground_friction_multiplier = 1.0
+air_drag_multiplier = 1.0
+turn_resistance_multiplier = 0.0
+jump_impulse_multiplier = 1.0
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 3200.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

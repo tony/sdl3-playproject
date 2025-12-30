@@ -1,0 +1,51 @@
+version = 1
+
+[enemy]
+id = "slime_basic"
+display = "Slime"
+type = "walker"
+
+[collision]
+w = 24
+h = 20
+
+[move]
+speed = 0.4
+gravity = 0.2
+max_fall_speed = 4.0
+turn_on_wall = true
+turn_on_edge = true
+
+[combat]
+health = 1
+contact_damage = 1
+stompable = true
+stomp_bounce_vy = -4.0
+iframes_ms = 250
+knockback_vx = 1.5
+knockback_vy = -2.5
+
+[render]
+frame_w = 64
+frame_h = 64
+scale = 2.0
+offset_y = 38.0
+
+[render.sheets]
+east = "assets/sprites/pixellab/sheets/slime_east.png"
+west = "assets/sprites/pixellab/sheets/slime_west.png"
+
+[render.anims.idle]
+row = 0
+frames = 4
+fps = 8.0
+
+[render.anims.walk]
+row = 1
+frames = 6
+fps = 10.0
+
+[render.anims.hurt]
+row = 3
+frames = 6
+fps = 12.0

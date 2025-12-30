@@ -1,0 +1,14 @@
+version = 1
+
+[[keyframes]]
+frame = 0
+right = true
+
+# Press jump a few frames after leaving the ledge to exercise coyote time.
+[[keyframes]]
+frame = 74
+jump = true
+
+[[keyframes]]
+frame = 90
+jump = false

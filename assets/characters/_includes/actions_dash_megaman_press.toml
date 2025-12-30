@@ -1,0 +1,8 @@
+[actions.dash]
+enabled = true
+type = "press"
+cooldown_frames = 0
+dash_speed = 1.75
+dash_time_frames = 29
+allow_air = false
+air_dashes = 0

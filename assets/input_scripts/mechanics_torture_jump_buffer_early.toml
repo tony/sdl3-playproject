@@ -1,0 +1,10 @@
+version = 1
+
+# Press jump early enough that Simon is still airborne (no buffering expected).
+[[keyframes]]
+frame = 30
+jump = true
+
+[[keyframes]]
+frame = 31
+jump = false
