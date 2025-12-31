@@ -1,0 +1,23 @@
+version = 1
+
+[name]
+id = "scout"
+display = "Scout Drone"
+
+[stats]
+health = 1
+score_value = 100
+contact_damage = 1.0
+invulnerable = false
+
+[collision]
+w = 24.0
+h = 16.0
+
+[movement]
+type = "linear"
+velocity_x = -2.0
+velocity_y = 0.0
+
+[fire]
+type = "none"

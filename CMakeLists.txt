@@ -49,6 +49,7 @@ set(SHMUP_SOURCES
   src/shmup/config/ShipConfig.cpp
   src/shmup/config/WeaponConfig.cpp
   src/shmup/config/SatelliteConfig.cpp
+  src/shmup/config/ShmupEnemyConfig.cpp
   src/shmup/controller/ShmupController.cpp
   src/shmup/controller/FirePatterns.cpp
   src/shmup/systems/ShmupSystems.cpp

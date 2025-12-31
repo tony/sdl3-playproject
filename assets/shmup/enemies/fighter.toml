@@ -1,0 +1,35 @@
+version = 1
+
+[name]
+id = "fighter"
+display = "Fighter"
+
+[stats]
+health = 3
+score_value = 200
+contact_damage = 1.0
+
+[collision]
+w = 32.0
+h = 24.0
+
+[movement]
+type = "sine"
+velocity_x = -1.5
+velocity_y = 0.0
+amplitude = 40.0
+frequency = 0.04
+oscillate_y = true
+
+[fire]
+type = "aimed"
+fire_interval = 1.5
+warmup_frames = 30
+shot_count = 1
+
+[fire.projectile]
+speed = 3.0
+damage = 1.0
+lifetime_frames = 180
+w = 8.0
+h = 8.0
