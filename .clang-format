@@ -1,0 +1,8 @@
+---
+Language: Cpp
+BasedOnStyle: Chromium
+IndentWidth: 2
+ColumnLimit: 100
+SortIncludes: true
+Standard: Latest
+...

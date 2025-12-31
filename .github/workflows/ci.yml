@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+    name: build-linux (${{ matrix.compiler }})
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build clang git pkg-config python3 \
+            libasound2-dev libpulse-dev libudev-dev \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxfixes-dev libxrender-dev libxss-dev \
+            libwayland-dev wayland-protocols libdecor-0-dev \
+            libdrm-dev libgbm-dev libegl1-mesa-dev libgl1-mesa-dev
+
+      - name: Configure
+        run: cmake --preset release-${{ matrix.compiler }}
+
+      - name: Build
+        run: cmake --build --preset release-${{ matrix.compiler }}
+
+      - name: Test (offscreen smoke)
+        run: ctest --test-dir build --output-on-failure
