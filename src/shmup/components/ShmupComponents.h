@@ -314,6 +314,26 @@ struct ItemMovement {
 };
 
 // =============================================================================
+// Visual Effect Components
+// =============================================================================
+
+struct ShmupEffectTag {};  // Tag for visual effect entities
+
+enum class EffectType : std::uint8_t {
+  Explosion,    // Enemy/boss death
+  HitSpark,     // Projectile impact
+  MuzzleFlash,  // Weapon fire (future)
+};
+
+struct EffectState {
+  EffectType type = EffectType::Explosion;
+  int lifetimeFrames = 30;  // 0.5 seconds at 60fps
+  int ageFrames = 0;
+  float scale = 1.0F;
+  float rotation = 0.0F;  // For spark variation
+};
+
+// =============================================================================
 // Player Input (normalized from SDL)
 // =============================================================================
 

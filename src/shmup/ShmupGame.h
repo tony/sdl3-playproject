@@ -53,6 +53,7 @@ class ShmupGame {
   void updateInput(const InputState& input);
   void renderBackground(SDL_Renderer* renderer, int viewW, int viewH);
   void renderEntities(SDL_Renderer* renderer);
+  void renderEffects(SDL_Renderer* renderer);
   void renderHUD(SDL_Renderer* renderer, int viewW, int viewH);
 
   SDL_Renderer* renderer_ = nullptr;

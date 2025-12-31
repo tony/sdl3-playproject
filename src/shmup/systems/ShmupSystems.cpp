@@ -423,9 +423,15 @@ void ShmupSystems::collision(World& w) {
         enemy.health -= static_cast<int>(proj.damage);
         --proj.pierceRemaining;
 
+        // Spawn hit spark at impact point
+        spawnHitSpark(w, projT.pos.x, projT.pos.y, 0.0F);
+
         if (enemy.health <= 0) {
           // Add score from enemy
           w.score += enemy.scoreValue;
+
+          // Spawn explosion at enemy position
+          spawnExplosion(w, enemyT.pos.x, enemyT.pos.y, 1.0F);
 
           // Process item drops before removing enemy
           const ShmupEnemyConfig* cfg = ShmupEnemyRegistry::get(enemy.typeId);
@@ -513,6 +519,9 @@ void ShmupSystems::collision(World& w) {
       if (hitSomething) {
         boss.currentHealth -= static_cast<int>(proj.damage * damageMultiplier);
         --proj.pierceRemaining;
+
+        // Spawn hit spark at impact point
+        spawnHitSpark(w, projT.pos.x, projT.pos.y, 0.0F);
 
         if (boss.currentHealth <= 0) {
           boss.dying = true;
@@ -907,13 +916,20 @@ void ShmupSystems::boss(World& w, TimeStep ts) {
       constexpr float kExplosionInterval = 0.15F;
       boss.explosionTimer += ts.dt;
       if (boss.explosionTimer >= kExplosionInterval && boss.explosionsRemaining > 0) {
-        // TODO(effects): Spawn explosion effect at random offset from boss center
-        // For now just count down
+        // Spawn explosion at pseudo-random offset from boss center
+        // Use explosionsRemaining as seed for variety
+        float seed = static_cast<float>(boss.explosionsRemaining) * 2.3999F;
+        float offsetX = std::sin(seed) * 60.0F;
+        float offsetY = std::cos(seed * 1.618F) * 40.0F;
+        spawnExplosion(w, t.pos.x + offsetX, t.pos.y + offsetY, 1.5F);
         --boss.explosionsRemaining;
         boss.explosionTimer = 0.0F;
       }
 
       if (boss.explosionsRemaining <= 0) {
+        // Final big explosion
+        spawnExplosion(w, t.pos.x, t.pos.y, 2.5F);
+
         // Add boss score before removal
         const ShmupBossConfig* cfg = ShmupBossRegistry::get(boss.bossId);
         if (cfg != nullptr) {
@@ -1341,6 +1357,53 @@ void ShmupSystems::playerDeath(World& w) {
         }
       }
       // If lives == 0, game over handled by ShmupGame
+    }
+  }
+}
+
+// =============================================================================
+// Visual Effects
+// =============================================================================
+
+void ShmupSystems::spawnExplosion(World& w, float x, float y, float scale) {
+  EntityId id = w.create();
+  w.registry.emplace<Transform>(id, Vec2{x, y});
+  w.registry.emplace<ShmupEffectTag>(id);
+
+  EffectState effect;
+  effect.type = EffectType::Explosion;
+  effect.lifetimeFrames = 24;  // ~0.4 seconds
+  effect.scale = scale;
+  w.registry.emplace<EffectState>(id, effect);
+}
+
+void ShmupSystems::spawnHitSpark(World& w, float x, float y, float angle) {
+  EntityId id = w.create();
+  w.registry.emplace<Transform>(id, Vec2{x, y});
+  w.registry.emplace<ShmupEffectTag>(id);
+
+  EffectState effect;
+  effect.type = EffectType::HitSpark;
+  effect.lifetimeFrames = 8;  // Quick flash
+  effect.rotation = angle;
+  effect.scale = 0.5F;
+  w.registry.emplace<EffectState>(id, effect);
+}
+
+void ShmupSystems::effects(World& w, [[maybe_unused]] TimeStep ts) {
+  auto view = w.registry.view<ShmupEffectTag, EffectState>();
+  std::vector<EntityId> toRemove;
+
+  for (auto [entity, effect] : view.each()) {
+    ++effect.ageFrames;
+    if (effect.ageFrames >= effect.lifetimeFrames) {
+      toRemove.push_back(entity);
+    }
+  }
+
+  for (EntityId e : toRemove) {
+    if (w.registry.valid(e)) {
+      w.destroy(e);
     }
   }
 }

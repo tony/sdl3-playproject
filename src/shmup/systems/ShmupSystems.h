@@ -86,6 +86,15 @@ void itemPickup(World& w);
 // Decrements lives, resets health, grants invincibility, downgrades weapons.
 void playerDeath(World& w);
 
+// Spawn explosion effect at position (enemy/boss death).
+void spawnExplosion(World& w, float x, float y, float scale = 1.0F);
+
+// Spawn hit spark effect at collision point.
+void spawnHitSpark(World& w, float x, float y, float angle = 0.0F);
+
+// Update effect lifetimes, remove expired effects.
+void effects(World& w, TimeStep ts);
+
 }  // namespace ShmupSystems
 
 }  // namespace shmup

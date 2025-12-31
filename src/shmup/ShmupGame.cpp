@@ -2,6 +2,8 @@
 
 #include <SDL3/SDL_render.h>
 
+#include <algorithm>
+
 #include "ecs/Components.h"
 #include "shmup/components/ShmupComponents.h"
 #include "shmup/config/ShipConfig.h"
@@ -80,6 +82,7 @@ void ShmupGame::updateInput(const InputState& input) {
 void ShmupGame::render(SDL_Renderer* renderer, int viewW, int viewH) {
   renderBackground(renderer, viewW, viewH);
   renderEntities(renderer);
+  renderEffects(renderer);
   renderHUD(renderer, viewW, viewH);
 }
 
@@ -185,6 +188,50 @@ void ShmupGame::renderEntities(SDL_Renderer* renderer) {
       SDL_SetRenderDrawColor(renderer, 200, 50, 50, 255);  // Red normally
     }
     SDL_RenderFillRect(renderer, &rect);
+  }
+}
+
+void ShmupGame::renderEffects(SDL_Renderer* renderer) {
+  auto view = world_.registry.view<ShmupEffectTag, EffectState, Transform>();
+
+  for (auto [entity, effect, t] : view.each()) {
+    float progress =
+        static_cast<float>(effect.ageFrames) / static_cast<float>(effect.lifetimeFrames);
+
+    // Clamp progress to [0, 1] for safety
+    progress = std::min(progress, 1.0F);
+
+    // Fade out alpha over lifetime
+    Uint8 alpha = static_cast<Uint8>((1.0F - progress) * 255.0F);
+
+    // Size expands then contracts
+    float sizeMult = effect.scale * (1.0F + progress * 0.5F);
+
+    if (effect.type == EffectType::Explosion) {
+      // Orange/yellow expanding circle (rendered as rect for simplicity)
+      float radius = 16.0F * sizeMult;
+      SDL_FRect rect;
+      rect.w = radius * 2.0F;
+      rect.h = radius * 2.0F;
+      rect.x = t.pos.x - radius;
+      rect.y = t.pos.y - radius;
+
+      // Color shifts from yellow to orange to red
+      Uint8 green = static_cast<Uint8>(200.0F * (1.0F - progress));
+      SDL_SetRenderDrawColor(renderer, 255, green, 50, alpha);
+      SDL_RenderFillRect(renderer, &rect);
+    } else if (effect.type == EffectType::HitSpark) {
+      // Small white flash that shrinks
+      float size = 8.0F * sizeMult * (1.0F - progress);
+      SDL_FRect rect;
+      rect.w = size;
+      rect.h = size;
+      rect.x = t.pos.x - size * 0.5F;
+      rect.y = t.pos.y - size * 0.5F;
+
+      SDL_SetRenderDrawColor(renderer, 255, 255, 200, alpha);
+      SDL_RenderFillRect(renderer, &rect);
+    }
   }
 }
 
