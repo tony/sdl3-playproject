@@ -49,8 +49,8 @@ void ShmupGame::tick(TimeStep ts, const InputState& input) {
   // Update background scroll
   backgroundX_ += kBackgroundScrollSpeed * ts.dt;
 
-  // Track score from kills
-  score_ = world_.enemyKills * 100;
+  // Track score from World (accumulated by systems)
+  score_ = static_cast<int>(world_.score);
 
   // Check for game over (player lost all lives)
   EntityId playerId = controller_.player();
@@ -204,6 +204,18 @@ void ShmupGame::renderHUD(SDL_Renderer* renderer, int viewW, int viewH) {
   snprintf(livesText, sizeof(livesText), "LIVES: %d", lives_);
   SDL_RenderDebugText(renderer, static_cast<float>(viewW) - 100.0F, 10.0F, livesText);
 
+  // Weapon level display
+  EntityId playerId = controller_.player();
+  if (playerId != kInvalidEntity && world_.registry.valid(playerId)) {
+    const auto* weapons = world_.registry.try_get<WeaponState>(playerId);
+    if (weapons != nullptr && !weapons->mounts.empty()) {
+      int level = weapons->mounts[0].level;
+      char levelText[16];
+      snprintf(levelText, sizeof(levelText), "LV:%d", level);
+      SDL_RenderDebugText(renderer, static_cast<float>(viewW) - 100.0F, 26.0F, levelText);
+    }
+  }
+
   // Game over message
   if (!running_) {
     const char* gameOver = "GAME OVER";
@@ -217,6 +229,7 @@ void ShmupGame::reset() {
   world_.registry.clear();
   world_.player = kInvalidEntity;
   world_.enemyKills = 0;
+  world_.score = 0;
 
   // Reset state
   running_ = true;

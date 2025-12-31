@@ -424,6 +424,9 @@ void ShmupSystems::collision(World& w) {
         --proj.pierceRemaining;
 
         if (enemy.health <= 0) {
+          // Add score from enemy
+          w.score += enemy.scoreValue;
+
           // Process item drops before removing enemy
           const ShmupEnemyConfig* cfg = ShmupEnemyRegistry::get(enemy.typeId);
           if (cfg != nullptr) {
@@ -911,7 +914,11 @@ void ShmupSystems::boss(World& w, TimeStep ts) {
       }
 
       if (boss.explosionsRemaining <= 0) {
-        // Final explosion delay finished, mark for removal
+        // Add boss score before removal
+        const ShmupBossConfig* cfg = ShmupBossRegistry::get(boss.bossId);
+        if (cfg != nullptr) {
+          w.score += cfg->stats.scoreValue;
+        }
         toRemove.push_back(entity);
       }
       continue;  // Skip other logic during death
@@ -1287,7 +1294,7 @@ void ShmupSystems::itemPickup(World& w) {
             break;
 
           case ItemEffectType::ScoreBonus:
-            // Would need score tracking in World - skip for now
+            w.score += itemState.effectValue;
             break;
 
           case ItemEffectType::Shield:
@@ -1310,6 +1317,30 @@ void ShmupSystems::itemPickup(World& w) {
   for (EntityId e : toRemove) {
     if (w.registry.valid(e)) {
       w.destroy(e);
+    }
+  }
+}
+
+void ShmupSystems::playerDeath(World& w) {
+  auto view = w.registry.view<ShmupPlayerTag, ShipState, Transform>();
+
+  for (auto [entity, ship, t] : view.each()) {
+    if (ship.health <= 0) {
+      if (ship.lives > 0) {
+        // Respawn with one less life
+        --ship.lives;
+        ship.health = 3;
+        ship.invincibleFrames = 180;   // 3 seconds at 60fps
+        t.pos = Vec2{200.0F, 360.0F};  // Respawn at left-center
+
+        // Downgrade weapon on death (classic SHMUP penalty)
+        if (auto* weapons = w.registry.try_get<WeaponState>(entity)) {
+          for (auto& mount : weapons->mounts) {
+            mount.level = std::max(1, mount.level - 1);
+          }
+        }
+      }
+      // If lives == 0, game over handled by ShmupGame
     }
   }
 }

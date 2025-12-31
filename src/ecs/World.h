@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <entt/entt.hpp>
 
 #include "core/Time.h"       // IWYU pragma: keep
@@ -21,6 +22,7 @@ class World {
   // debug/test-friendly counters
   int hurtEvents = 0;
   int enemyKills = 0;
+  std::int64_t score = 0;
 
   // external handle: "currently controlled player"
   EntityId player = kInvalidEntity;

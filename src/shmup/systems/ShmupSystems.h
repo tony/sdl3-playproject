@@ -82,6 +82,10 @@ void itemMovement(World& w, TimeStep ts);
 // Check player-item collision, apply effects (weapon upgrade, life, etc.).
 void itemPickup(World& w);
 
+// Handle player death and respawn with lives system.
+// Decrements lives, resets health, grants invincibility, downgrades weapons.
+void playerDeath(World& w);
+
 }  // namespace ShmupSystems
 
 }  // namespace shmup

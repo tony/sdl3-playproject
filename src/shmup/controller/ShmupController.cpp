@@ -155,6 +155,7 @@ void ShmupController::update(World& world, TimeStep ts) {
   ShmupSystems::collision(world);
   ShmupSystems::itemMovement(world, ts);
   ShmupSystems::itemPickup(world);
+  ShmupSystems::playerDeath(world);
   ShmupSystems::cleanup(world);
 }
 
