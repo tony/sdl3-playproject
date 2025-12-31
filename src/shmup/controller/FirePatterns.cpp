@@ -12,8 +12,12 @@ namespace {
 
 constexpr float kPi = 3.14159265358979323846F;
 
-EntityId spawnProjectile(World& w, const WeaponConfig& cfg, const WeaponConfig::LevelStats& stats,
-                         Vec2 pos, float angle, bool fromPlayer) {
+EntityId spawnProjectile(World& w,
+                         const WeaponConfig& cfg,
+                         const WeaponConfig::LevelStats& stats,
+                         Vec2 pos,
+                         float angle,
+                         bool fromPlayer) {
   EntityId id = w.create();
   auto& reg = w.registry;
 
@@ -41,8 +45,12 @@ EntityId spawnProjectile(World& w, const WeaponConfig& cfg, const WeaponConfig::
 
 }  // namespace
 
-void FirePatterns::fire(World& w, const WeaponConfig& cfg, const WeaponConfig::LevelStats& stats,
-                        Vec2 firePos, float baseAngle, bool fromPlayer) {
+void FirePatterns::fire(World& w,
+                        const WeaponConfig& cfg,
+                        const WeaponConfig::LevelStats& stats,
+                        Vec2 firePos,
+                        float baseAngle,
+                        bool fromPlayer) {
   switch (cfg.pattern) {
     case WeaponConfig::PatternType::Single:
       fireSingle(w, cfg, stats, firePos, baseAngle, fromPlayer);
@@ -64,9 +72,12 @@ void FirePatterns::fire(World& w, const WeaponConfig& cfg, const WeaponConfig::L
   }
 }
 
-void FirePatterns::fireSingle(World& w, const WeaponConfig& cfg,
-                               const WeaponConfig::LevelStats& stats, Vec2 firePos, float baseAngle,
-                               bool fromPlayer) {
+void FirePatterns::fireSingle(World& w,
+                              const WeaponConfig& cfg,
+                              const WeaponConfig::LevelStats& stats,
+                              Vec2 firePos,
+                              float baseAngle,
+                              bool fromPlayer) {
   // Single fires multiple projectiles in a narrow spread (based on level)
   const int count = stats.projectileCount;
   const float spread = stats.spreadAngle;
@@ -86,9 +97,12 @@ void FirePatterns::fireSingle(World& w, const WeaponConfig& cfg,
   }
 }
 
-void FirePatterns::fireSpread(World& w, const WeaponConfig& cfg,
-                               const WeaponConfig::LevelStats& stats, Vec2 firePos, float baseAngle,
-                               bool fromPlayer) {
+void FirePatterns::fireSpread(World& w,
+                              const WeaponConfig& cfg,
+                              const WeaponConfig::LevelStats& stats,
+                              Vec2 firePos,
+                              float baseAngle,
+                              bool fromPlayer) {
   // Spread is like single but always fans out
   const int count = stats.projectileCount;
   const float spread = stats.spreadAngle;
@@ -107,9 +121,12 @@ void FirePatterns::fireSpread(World& w, const WeaponConfig& cfg,
   }
 }
 
-void FirePatterns::fireHoming(World& w, const WeaponConfig& cfg,
-                               const WeaponConfig::LevelStats& stats, Vec2 firePos, float baseAngle,
-                               bool fromPlayer) {
+void FirePatterns::fireHoming(World& w,
+                              const WeaponConfig& cfg,
+                              const WeaponConfig::LevelStats& stats,
+                              Vec2 firePos,
+                              float baseAngle,
+                              bool fromPlayer) {
   // Spawn homing projectiles
   const int count = stats.projectileCount;
   const float spread = stats.spreadAngle;
@@ -141,9 +158,12 @@ void FirePatterns::fireHoming(World& w, const WeaponConfig& cfg,
   }
 }
 
-void FirePatterns::fireWave(World& w, const WeaponConfig& cfg,
-                             const WeaponConfig::LevelStats& stats, Vec2 firePos, float baseAngle,
-                             bool fromPlayer) {
+void FirePatterns::fireWave(World& w,
+                            const WeaponConfig& cfg,
+                            const WeaponConfig::LevelStats& stats,
+                            Vec2 firePos,
+                            float baseAngle,
+                            bool fromPlayer) {
   // Wave pattern: projectiles that oscillate vertically
   // The oscillation is handled by a special component, but for now
   // we just spawn with slight vertical velocity variation
@@ -154,8 +174,7 @@ void FirePatterns::fireWave(World& w, const WeaponConfig& cfg,
     Vec2 offset{static_cast<float>(i) * 8.0F, 0.0F};
     EntityId id = spawnProjectile(w, cfg, stats, firePos + offset, baseAngle, fromPlayer);
 
-    // Add wave motion component
-    // TODO: Create WaveMotion component for proper sinusoidal movement
+    // Wave motion handled by velocity variation for now
     (void)id;
   }
 }

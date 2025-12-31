@@ -23,7 +23,10 @@ class ShmupController {
   EntityId spawnPlayer(World& world, const ShipConfig& shipCfg, float startX, float startY);
 
   // Spawn a satellite attached to the player.
-  EntityId spawnSatellite(World& world, EntityId owner, const SatelliteConfig& satCfg, int slotIndex);
+  EntityId spawnSatellite(World& world,
+                          EntityId owner,
+                          const SatelliteConfig& satCfg,
+                          int slotIndex);
 
   // Update all SHMUP-specific systems for one frame.
   void update(World& world, TimeStep ts);

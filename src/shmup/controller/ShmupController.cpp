@@ -11,8 +11,10 @@
 
 namespace shmup {
 
-EntityId ShmupController::spawnPlayer(World& world, const ShipConfig& shipCfg, float startX,
-                                       float startY) {
+EntityId ShmupController::spawnPlayer(World& world,
+                                      const ShipConfig& shipCfg,
+                                      float startX,
+                                      float startY) {
   EntityId id = world.create();
   auto& reg = world.registry;
 
@@ -63,8 +65,10 @@ EntityId ShmupController::spawnPlayer(World& world, const ShipConfig& shipCfg, f
   return id;
 }
 
-EntityId ShmupController::spawnSatellite(World& world, EntityId owner,
-                                          const SatelliteConfig& satCfg, int slotIndex) {
+EntityId ShmupController::spawnSatellite(World& world,
+                                         EntityId owner,
+                                         const SatelliteConfig& satCfg,
+                                         int slotIndex) {
   EntityId id = world.create();
   auto& reg = world.registry;
 

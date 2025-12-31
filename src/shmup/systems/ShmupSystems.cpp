@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 #include "core/Time.h"
 #include "ecs/Components.h"
@@ -40,10 +41,14 @@ void ShmupSystems::playerMovement(World& w, [[maybe_unused]] TimeStep ts) {
     // Calculate desired velocity from input
     float dx = 0.0F;
     float dy = 0.0F;
-    if (input.left) dx -= 1.0F;
-    if (input.right) dx += 1.0F;
-    if (input.upHeld) dy -= 1.0F;
-    if (input.downHeld) dy += 1.0F;
+    if (input.left)
+      dx -= 1.0F;
+    if (input.right)
+      dx += 1.0F;
+    if (input.upHeld)
+      dy -= 1.0F;
+    if (input.downHeld)
+      dy += 1.0F;
 
     // Normalize diagonal movement
     const float len = std::sqrt(dx * dx + dy * dy);
@@ -67,8 +72,7 @@ void ShmupSystems::playerMovement(World& w, [[maybe_unused]] TimeStep ts) {
     t.pos.x += vel.v.x;
     t.pos.y += vel.v.y;
 
-    // Clamp to screen bounds (assuming 1280x720 for now)
-    // TODO: Get actual screen dimensions from game state
+    // Clamp to screen bounds (hardcoded 1280x720 for now)
     constexpr float kMargin = 16.0F;
     constexpr float kScreenW = 1280.0F;
     constexpr float kScreenH = 720.0F;
@@ -178,7 +182,6 @@ void ShmupSystems::weaponFiring(World& w, [[maybe_unused]] TimeStep ts) {
     }
 
     // Satellites fire with same cooldown timing as owner's first weapon
-    // TODO: Support satellite-specific weapon overrides
     if (!ownerWeapons->mounts.empty()) {
       const auto& ownerMount = ownerWeapons->mounts[0];
       // Check if owner just fired (cooldown was just reset)
@@ -252,8 +255,10 @@ void ShmupSystems::projectiles(World& w, [[maybe_unused]] TimeStep ts) {
 
           // Calculate angle difference
           float diff = targetAngle - currentAngle;
-          while (diff > kPi) diff -= 2.0F * kPi;
-          while (diff < -kPi) diff += 2.0F * kPi;
+          while (diff > kPi)
+            diff -= 2.0F * kPi;
+          while (diff < -kPi)
+            diff += 2.0F * kPi;
 
           // Limit turn rate
           diff = std::clamp(diff, -homing.turnRate, homing.turnRate);
@@ -300,10 +305,12 @@ void ShmupSystems::collision(World& w) {
   std::vector<EntityId> enemiesToRemove;
 
   for (auto [projEnt, proj, projT, projAABB] : projView.each()) {
-    if (!proj.fromPlayer) continue;
+    if (!proj.fromPlayer)
+      continue;
 
     for (auto [enemyEnt, enemy, enemyT, enemyAABB] : enemyView.each()) {
-      if (enemy.invulnerable) continue;
+      if (enemy.invulnerable)
+        continue;
 
       // Simple AABB collision
       const float dx = std::abs(projT.pos.x - enemyT.pos.x);
@@ -331,10 +338,12 @@ void ShmupSystems::collision(World& w) {
   // Enemy projectiles vs player
   auto playerView = w.registry.view<ShmupPlayerTag, ShipState, Transform, AABB>();
   for (auto [projEnt, proj, projT, projAABB] : projView.each()) {
-    if (proj.fromPlayer) continue;
+    if (proj.fromPlayer)
+      continue;
 
     for (auto [playerEnt, ship, playerT, playerAABB] : playerView.each()) {
-      if (ship.invincibleFrames > 0) continue;
+      if (ship.invincibleFrames > 0)
+        continue;
 
       const float dx = std::abs(projT.pos.x - playerT.pos.x);
       const float dy = std::abs(projT.pos.y - playerT.pos.y);
