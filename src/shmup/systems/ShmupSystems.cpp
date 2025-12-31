@@ -9,6 +9,7 @@
 #include "ecs/World.h"
 #include "shmup/components/ShmupComponents.h"
 #include "shmup/config/LevelConfig.h"
+#include "shmup/config/ShmupBossConfig.h"
 #include "shmup/config/ShmupEnemyConfig.h"
 #include "shmup/config/WeaponConfig.h"
 #include "shmup/controller/FirePatterns.h"
@@ -26,6 +27,46 @@ float lerp(float a, float b, float t) {
 // Smoothly interpolate between two values over time
 float lerpSmooth(float current, float target, float smoothing, float dt) {
   return lerp(current, target, 1.0F - std::exp(-smoothing * dt));
+}
+
+// Ease-out cubic interpolation for smooth boss entrance
+float easeOutCubic(float t) {
+  return 1.0F - std::pow(1.0F - t, 3.0F);
+}
+
+// Map boss movement type enum to ECS movement type
+MovementType mapBossMovementType(ShmupBossConfig::MovementType type) {
+  switch (type) {
+    case ShmupBossConfig::MovementType::None:
+      return MovementType::None;
+    case ShmupBossConfig::MovementType::Linear:
+      return MovementType::Linear;
+    case ShmupBossConfig::MovementType::Sine:
+      return MovementType::Sine;
+    case ShmupBossConfig::MovementType::Chase:
+      return MovementType::Chase;
+    case ShmupBossConfig::MovementType::Orbit:
+      return MovementType::Orbit;
+    case ShmupBossConfig::MovementType::Figure8:
+      // Figure8 uses Sine with special handling in boss()
+      return MovementType::Sine;
+  }
+  return MovementType::None;
+}
+
+// Map boss fire type enum to ECS fire type
+FireType mapBossFireType(ShmupBossConfig::FireType type) {
+  switch (type) {
+    case ShmupBossConfig::FireType::None:
+      return FireType::None;
+    case ShmupBossConfig::FireType::Aimed:
+      return FireType::Aimed;
+    case ShmupBossConfig::FireType::Spread:
+      return FireType::Spread;
+    case ShmupBossConfig::FireType::Circular:
+      return FireType::Circular;
+  }
+  return FireType::None;
 }
 
 // Spawn enemy projectile based on fire pattern
@@ -386,6 +427,90 @@ void ShmupSystems::collision(World& w) {
     }
   }
 
+  // Player projectiles vs bosses (with weak points)
+  auto bossView = w.registry.view<ShmupBossTag, BossState, Transform, AABB>();
+  for (auto [projEnt, proj, projT, projAABB] : projView.each()) {
+    if (!proj.fromPlayer)
+      continue;
+    if (proj.pierceRemaining <= 0)
+      continue;
+
+    for (auto [bossEnt, boss, bossT, bossAABB] : bossView.each()) {
+      // Boss invulnerable during entrance or death
+      if (boss.entering || boss.dying)
+        continue;
+
+      bool hitSomething = false;
+      float damageMultiplier = 1.0F;
+
+      // Check weak points first (higher priority)
+      if (!boss.phases.empty() &&
+          static_cast<std::size_t>(boss.currentPhase) < boss.phases.size()) {
+        const auto& phase = boss.phases[static_cast<std::size_t>(boss.currentPhase)];
+
+        for (auto& wp : boss.weakPoints) {
+          if (wp.destroyed)
+            continue;
+
+          // Check if weak point is active in current phase
+          bool isActive = std::find(phase.weakPoints.begin(), phase.weakPoints.end(), wp.id) !=
+                          phase.weakPoints.end();
+          if (!isActive)
+            continue;
+
+          // AABB check at weak point offset
+          float wpX = bossT.pos.x + wp.offsetX;
+          float wpY = bossT.pos.y + wp.offsetY;
+          float dx = std::abs(projT.pos.x - wpX);
+          float dy = std::abs(projT.pos.y - wpY);
+          float overlapX = (projAABB.w + wp.hitboxW) * 0.5F;
+          float overlapY = (projAABB.h + wp.hitboxH) * 0.5F;
+
+          if (dx < overlapX && dy < overlapY) {
+            damageMultiplier = wp.damageMultiplier;
+            hitSomething = true;
+
+            // Weak point has its own health
+            if (wp.health > 0) {
+              wp.health -= static_cast<int>(proj.damage * damageMultiplier);
+              if (wp.health <= 0) {
+                wp.destroyed = true;
+              }
+            }
+            break;  // Only hit one weak point
+          }
+        }
+      }
+
+      // If no weak point hit, check main body
+      if (!hitSomething) {
+        float dx = std::abs(projT.pos.x - bossT.pos.x);
+        float dy = std::abs(projT.pos.y - bossT.pos.y);
+        float overlapX = (projAABB.w + bossAABB.w) * 0.5F;
+        float overlapY = (projAABB.h + bossAABB.h) * 0.5F;
+
+        if (dx < overlapX && dy < overlapY) {
+          hitSomething = true;
+        }
+      }
+
+      if (hitSomething) {
+        boss.currentHealth -= static_cast<int>(proj.damage * damageMultiplier);
+        --proj.pierceRemaining;
+
+        if (boss.currentHealth <= 0) {
+          boss.dying = true;
+          boss.currentHealth = 0;
+        }
+
+        if (proj.pierceRemaining <= 0) {
+          projToRemove.push_back(projEnt);
+          break;  // Projectile is done
+        }
+      }
+    }
+  }
+
   // Enemy projectiles vs player
   auto playerView = w.registry.view<ShmupPlayerTag, ShipState, Transform, AABB>();
   for (auto [projEnt, proj, projT, projAABB] : projView.each()) {
@@ -626,10 +751,195 @@ EntityId ShmupSystems::spawnEnemy(World& w, const ShmupEnemyConfig& cfg, float x
   return id;
 }
 
+EntityId ShmupSystems::spawnBoss(World& w,
+                                 const ShmupBossConfig& cfg,
+                                 [[maybe_unused]] float x,
+                                 [[maybe_unused]] float y) {
+  EntityId id = w.create();
+  auto& reg = w.registry;
+
+  // Spawn at entrance start position (from config), will animate to target
+  reg.emplace<Transform>(id, Vec2{cfg.entrance.startX, cfg.entrance.startY});
+  reg.emplace<AABB>(id, cfg.collision.w, cfg.collision.h);
+  reg.emplace<ShmupBossTag>(id);
+
+  // Initialize boss state
+  BossState boss;
+  boss.bossId = cfg.id;
+  boss.totalHealth = cfg.stats.totalHealth;
+  boss.currentHealth = cfg.stats.totalHealth;
+  boss.entering = true;
+  boss.entranceProgress = 0.0F;
+  boss.entranceDuration = cfg.entrance.durationSeconds;
+  boss.targetX = cfg.entrance.targetX;
+  boss.targetY = cfg.entrance.targetY;
+  boss.currentPhase = 0;
+  boss.dying = false;
+  boss.explosionsRemaining = cfg.death.explosionCount;
+  boss.explosionTimer = 0.0F;
+  boss.minionTimer = 0.0F;
+
+  // Copy phases from config
+  for (const auto& phaseCfg : cfg.phases) {
+    BossPhase phase;
+    phase.id = phaseCfg.id;
+    phase.healthThreshold = phaseCfg.healthThreshold;
+    phase.weakPoints = phaseCfg.activeWeakPoints;
+    phase.spawnMinions = phaseCfg.minions.enabled;
+    phase.minionType = phaseCfg.minions.minionType;
+    phase.minionInterval = phaseCfg.minions.spawnInterval;
+    phase.speedMultiplier = phaseCfg.movement.speedMultiplier;
+    boss.phases.push_back(phase);
+  }
+
+  // Copy weak points from config
+  for (const auto& wpCfg : cfg.weakPoints) {
+    WeakPoint wp;
+    wp.id = wpCfg.id;
+    wp.offsetX = wpCfg.offsetX;
+    wp.offsetY = wpCfg.offsetY;
+    wp.hitboxW = wpCfg.hitboxW;
+    wp.hitboxH = wpCfg.hitboxH;
+    wp.damageMultiplier = wpCfg.damageMultiplier;
+    wp.health = wpCfg.health;
+    wp.destroyed = false;
+    boss.weakPoints.push_back(wp);
+  }
+
+  reg.emplace<BossState>(id, boss);
+
+  // Set up initial movement from phase 0
+  Movement move;
+  if (!cfg.phases.empty()) {
+    const auto& phase0 = cfg.phases[0];
+    move.type = mapBossMovementType(phase0.movement.type);
+    move.velocityX = phase0.movement.velocityX;
+    move.velocityY = phase0.movement.velocityY;
+    move.amplitude = phase0.movement.amplitude;
+    move.frequency = phase0.movement.frequency;
+    move.oscillateY = phase0.movement.oscillateY;
+    move.chaseSpeed = phase0.movement.chaseSpeed;
+    move.turnRate = phase0.movement.turnRate;
+    move.boundsMinY = phase0.movement.boundsMinY;
+    move.boundsMaxY = phase0.movement.boundsMaxY;
+  }
+  reg.emplace<Movement>(id, move);
+
+  // Set up initial firing from phase 0
+  Firing fire;
+  if (!cfg.phases.empty()) {
+    const auto& phase0 = cfg.phases[0];
+    fire.type = mapBossFireType(phase0.fire.type);
+    fire.fireInterval = phase0.fire.fireInterval;
+    fire.shotCount = phase0.fire.shotCount;
+    fire.spreadAngle = phase0.fire.spreadAngle;
+    fire.rotationSpeed = phase0.fire.rotationSpeed;
+    fire.shotsPerBurst = phase0.fire.burstCount;
+    fire.burstInterval = phase0.fire.burstInterval;
+  }
+  reg.emplace<Firing>(id, fire);
+
+  return id;
+}
+
+void ShmupSystems::boss(World& w, TimeStep ts) {
+  auto view = w.registry.view<ShmupBossTag, BossState, Transform, Movement, Firing>();
+
+  std::vector<EntityId> toRemove;
+
+  for (auto [entity, boss, t, move, fire] : view.each()) {
+    // 1. Entrance animation (lerp from start to target)
+    if (boss.entering) {
+      boss.entranceProgress += ts.dt;
+      float ratio = std::min(boss.entranceProgress / boss.entranceDuration, 1.0F);
+      float eased = easeOutCubic(ratio);
+
+      // Calculate start position from target + direction offset
+      // Boss enters from right side of screen
+      constexpr float kEntranceOffsetX = 400.0F;
+      float startX = boss.targetX + kEntranceOffsetX;
+      float startY = boss.targetY;
+
+      t.pos.x = lerp(startX, boss.targetX, eased);
+      t.pos.y = lerp(startY, boss.targetY, eased);
+
+      if (ratio >= 1.0F) {
+        boss.entering = false;
+        // Snap to exact target position
+        t.pos.x = boss.targetX;
+        t.pos.y = boss.targetY;
+      }
+      continue;  // Skip other logic during entrance
+    }
+
+    // 2. Death sequence (spawn explosions, then despawn)
+    if (boss.dying) {
+      constexpr float kExplosionInterval = 0.15F;
+      boss.explosionTimer += ts.dt;
+      if (boss.explosionTimer >= kExplosionInterval && boss.explosionsRemaining > 0) {
+        // TODO(effects): Spawn explosion effect at random offset from boss center
+        // For now just count down
+        --boss.explosionsRemaining;
+        boss.explosionTimer = 0.0F;
+      }
+
+      if (boss.explosionsRemaining <= 0) {
+        // Final explosion delay finished, mark for removal
+        toRemove.push_back(entity);
+      }
+      continue;  // Skip other logic during death
+    }
+
+    // 3. Phase transitions (when health crosses threshold)
+    float healthRatio =
+        static_cast<float>(boss.currentHealth) / static_cast<float>(boss.totalHealth);
+
+    // Find the appropriate phase based on current health
+    for (std::size_t i = static_cast<std::size_t>(boss.currentPhase) + 1; i < boss.phases.size();
+         ++i) {
+      if (healthRatio <= boss.phases[i].healthThreshold) {
+        boss.currentPhase = static_cast<int>(i);
+
+        // Update movement and firing for new phase
+        // This requires access to the ShmupBossConfig, but we don't have it here.
+        // Instead, we store pattern IDs in phases and would need a different approach.
+        // For MVP, phases just affect minion spawning and speed multiplier.
+        break;
+      }
+    }
+
+    // 4. Minion spawning
+    if (!boss.phases.empty() && static_cast<std::size_t>(boss.currentPhase) < boss.phases.size()) {
+      const auto& phase = boss.phases[static_cast<std::size_t>(boss.currentPhase)];
+      if (phase.spawnMinions) {
+        boss.minionTimer += ts.dt;
+        if (boss.minionTimer >= phase.minionInterval) {
+          boss.minionTimer = 0.0F;
+          // Spawn minion at offset from boss position
+          const ShmupEnemyConfig* minionCfg = ShmupEnemyRegistry::get(phase.minionType);
+          if (minionCfg != nullptr) {
+            ShmupSystems::spawnEnemy(w, *minionCfg, t.pos.x - 80.0F, t.pos.y);
+          }
+        }
+      }
+    }
+
+    // Boss movement is handled by enemyMovement() system since it uses the same Movement component
+    // Boss firing is handled by enemyFiring() system since it uses the same Firing component
+  }
+
+  for (EntityId e : toRemove) {
+    if (w.registry.valid(e)) {
+      w.destroy(e);
+    }
+  }
+}
+
 // WaveSpawner implementation
 void WaveSpawner::init(const LevelConfig* levelCfg) {
   level = levelCfg;
   nextWaveIndex = 0;
+  nextBossIndex = 0;
   lastScrollX = 0.0F;
 }
 
@@ -718,12 +1028,31 @@ void WaveSpawner::update(World& w, float scrollX) {
     ++nextWaveIndex;
   }
 
+  // Check for boss sections to spawn
+  while (nextBossIndex < level->bossSections.size()) {
+    const auto& bossSection = level->bossSections[nextBossIndex];
+
+    // Check if we've scrolled past the trigger position
+    if (scrollX < bossSection.triggerPosition) {
+      break;  // Not yet triggered
+    }
+
+    // Spawn the boss
+    const ShmupBossConfig* bossCfg = ShmupBossRegistry::get(bossSection.bossId);
+    if (bossCfg != nullptr) {
+      ShmupSystems::spawnBoss(w, *bossCfg, bossCfg->entrance.startX, bossCfg->entrance.startY);
+    }
+
+    ++nextBossIndex;
+  }
+
   lastScrollX = scrollX;
 }
 
 void WaveSpawner::reset() {
   level = nullptr;
   nextWaveIndex = 0;
+  nextBossIndex = 0;
   lastScrollX = 0.0F;
 }
 

@@ -1,0 +1,196 @@
+# Mothership Alpha - Stage 1 Boss
+# A large warship with multiple phases and weak points
+
+version = 1
+
+[name]
+id = "mothership"
+display = "Mothership Alpha"
+
+[stats]
+total_health = 2000
+score_value = 50000
+contact_damage = 10.0
+
+[collision]
+w = 160.0
+h = 120.0
+
+[entrance]
+start_x = 1500.0
+start_y = 360.0
+target_x = 1000.0
+target_y = 360.0
+duration_seconds = 3.0
+invulnerable_during = true
+
+[death]
+explosion_count = 12
+explosion_interval = 0.15
+final_explosion_delay = 0.5
+
+# Phase 1: 100% - 60% health
+# Simple spread fire, sine wave movement
+[[phases]]
+id = "phase1"
+health_threshold = 1.0
+active_weak_points = ["core"]
+
+[phases.movement]
+type = "sine"
+amplitude = 80.0
+frequency = 0.02
+oscillate_y = true
+bounds_min_y = 100.0
+bounds_max_y = 620.0
+speed_multiplier = 1.0
+
+[phases.fire]
+type = "spread"
+fire_interval = 2.0
+shot_count = 5
+spread_angle = 0.8
+rotation_speed = 0.0
+burst_count = 1
+burst_interval = 0.1
+
+[phases.fire.projectile]
+speed = 4.0
+damage = 1.0
+lifetime_frames = 180
+w = 10.0
+h = 10.0
+
+# Phase 2: 60% - 30% health
+# Circular pattern, spawn minions, more aggressive
+[[phases]]
+id = "phase2"
+health_threshold = 0.6
+active_weak_points = ["core", "turret_top", "turret_bottom"]
+
+[phases.movement]
+type = "sine"
+velocity_x = 0.0
+amplitude = 100.0
+frequency = 0.03
+oscillate_y = true
+bounds_min_y = 120.0
+bounds_max_y = 600.0
+speed_multiplier = 1.2
+
+[phases.fire]
+type = "circular"
+fire_interval = 0.5
+shot_count = 8
+spread_angle = 6.28  # Full circle
+rotation_speed = 0.05
+burst_count = 1
+burst_interval = 0.1
+
+[phases.fire.projectile]
+speed = 3.0
+damage = 1.0
+lifetime_frames = 180
+w = 8.0
+h = 8.0
+
+[phases.minions]
+enabled = true
+minion_type = "scout"
+spawn_interval = 4.0
+max_active = 4
+spawn_offset_x = -80.0
+spawn_offset_y = 0.0
+
+# Phase 3: 30% - 0% health
+# Desperate mode: fast aimed shots, aggressive movement
+[[phases]]
+id = "phase3"
+health_threshold = 0.3
+active_weak_points = ["core"]
+
+[phases.movement]
+type = "chase"
+chase_speed = 1.5
+turn_rate = 0.02
+bounds_min_y = 100.0
+bounds_max_y = 620.0
+speed_multiplier = 1.5
+
+[phases.fire]
+type = "aimed"
+fire_interval = 0.3
+shot_count = 3
+spread_angle = 0.3
+rotation_speed = 0.0
+burst_count = 2
+burst_interval = 0.08
+
+[phases.fire.projectile]
+speed = 5.0
+damage = 1.0
+lifetime_frames = 150
+w = 10.0
+h = 10.0
+
+# Weak Points
+# Core is always targetable, turrets only in phase 2
+
+[[weak_points]]
+id = "core"
+offset_x = 0.0
+offset_y = 0.0
+hitbox_w = 32.0
+hitbox_h = 32.0
+damage_multiplier = 2.0
+health = -1  # Indestructible, follows boss health
+targetable = true
+
+[[weak_points]]
+id = "turret_top"
+offset_x = 40.0
+offset_y = -40.0
+hitbox_w = 20.0
+hitbox_h = 20.0
+damage_multiplier = 1.5
+health = 200  # Can be destroyed
+targetable = true
+
+[[weak_points]]
+id = "turret_bottom"
+offset_x = 40.0
+offset_y = 40.0
+hitbox_w = 20.0
+hitbox_h = 20.0
+damage_multiplier = 1.5
+health = 200  # Can be destroyed
+targetable = true
+
+# Rendering (placeholder)
+[render]
+frame_w = 160
+frame_h = 120
+scale = 1.0
+offset_x = 0.0
+offset_y = 0.0
+
+[render.sheets]
+default = "sprites/bosses/mothership.png"
+
+[render.anims.idle]
+row = 0
+start = 0
+frames = 4
+fps = 8.0
+
+[render.anims.damaged]
+row = 1
+start = 0
+frames = 4
+fps = 12.0
+
+[render.anims.dying]
+row = 2
+start = 0
+frames = 8
+fps = 12.0

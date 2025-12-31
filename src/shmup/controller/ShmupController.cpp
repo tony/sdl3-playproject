@@ -7,6 +7,7 @@
 #include "shmup/config/LevelConfig.h"
 #include "shmup/config/SatelliteConfig.h"
 #include "shmup/config/ShipConfig.h"
+#include "shmup/config/ShmupBossConfig.h"
 #include "shmup/config/WeaponConfig.h"
 #include "shmup/systems/ShmupSystems.h"
 
@@ -131,10 +132,16 @@ void ShmupController::update(World& world, TimeStep ts) {
     return;
   }
 
-  // Update scroll position
-  scrollX_ += scrollSpeed_ * ts.dt;
+  // Check if a boss is currently active (pause scroll during boss fights)
+  auto bossView = world.registry.view<ShmupBossTag, BossState>();
+  bool bossActive = bossView.begin() != bossView.end();
 
-  // Spawn waves based on scroll position
+  // Only scroll if no boss is active
+  if (!bossActive) {
+    scrollX_ += scrollSpeed_ * ts.dt;
+  }
+
+  // Spawn waves and bosses based on scroll position
   waveSpawner_.update(world, scrollX_);
 
   // Run SHMUP systems in order
@@ -143,6 +150,7 @@ void ShmupController::update(World& world, TimeStep ts) {
   ShmupSystems::weaponFiring(world, ts);
   ShmupSystems::enemyMovement(world, ts);
   ShmupSystems::enemyFiring(world, ts);
+  ShmupSystems::boss(world, ts);  // Boss state machine (entrance, phases, death)
   ShmupSystems::projectiles(world, ts);
   ShmupSystems::collision(world);
   ShmupSystems::cleanup(world);

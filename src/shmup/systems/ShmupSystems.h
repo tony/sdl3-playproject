@@ -11,11 +11,13 @@ namespace shmup {
 
 struct LevelConfig;
 struct ShmupEnemyConfig;
+struct ShmupBossConfig;
 
 // Runtime wave spawning state
 struct WaveSpawner {
   const LevelConfig* level = nullptr;
   std::size_t nextWaveIndex = 0;
+  std::size_t nextBossIndex = 0;
   float lastScrollX = 0.0F;
 
   void init(const LevelConfig* levelCfg);
@@ -60,6 +62,12 @@ void cleanup(World& w);
 
 // Spawn a single enemy at the given position with config.
 EntityId spawnEnemy(World& w, const ShmupEnemyConfig& cfg, float x, float y);
+
+// Spawn a boss at the given position with config.
+EntityId spawnBoss(World& w, const ShmupBossConfig& cfg, float x, float y);
+
+// Boss behavior: entrance animation, phase transitions, minion spawning, death.
+void boss(World& w, TimeStep ts);
 
 }  // namespace ShmupSystems
 
