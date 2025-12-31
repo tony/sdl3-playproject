@@ -153,6 +153,8 @@ void ShmupController::update(World& world, TimeStep ts) {
   ShmupSystems::boss(world, ts);  // Boss state machine (entrance, phases, death)
   ShmupSystems::projectiles(world, ts);
   ShmupSystems::collision(world);
+  ShmupSystems::itemMovement(world, ts);
+  ShmupSystems::itemPickup(world);
   ShmupSystems::cleanup(world);
 }
 

@@ -1,0 +1,21 @@
+version = 1
+
+[item]
+id = "bomb"
+display = "Bomb"
+
+[effect]
+type = "bomb"
+value = 1
+
+[pickup]
+radius = 28.0
+lifetime_frames = 900
+magnet_range = 80.0
+magnet_speed = 5.0
+
+[movement]
+type = "bounce"
+velocity_x = 0.8
+velocity_y = 1.2
+bounce_speed = 2.0

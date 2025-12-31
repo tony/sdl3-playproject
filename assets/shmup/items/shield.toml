@@ -1,0 +1,20 @@
+version = 1
+
+[item]
+id = "shield"
+display = "Shield"
+
+[effect]
+type = "shield"
+value = 180
+
+[pickup]
+radius = 26.0
+lifetime_frames = 600
+magnet_range = 90.0
+magnet_speed = 5.0
+
+[movement]
+type = "float"
+velocity_x = -0.4
+velocity_y = 0.6

@@ -12,6 +12,7 @@ namespace shmup {
 struct LevelConfig;
 struct ShmupEnemyConfig;
 struct ShmupBossConfig;
+struct ShmupItemConfig;
 
 // Runtime wave spawning state
 struct WaveSpawner {
@@ -68,6 +69,18 @@ EntityId spawnBoss(World& w, const ShmupBossConfig& cfg, float x, float y);
 
 // Boss behavior: entrance animation, phase transitions, minion spawning, death.
 void boss(World& w, TimeStep ts);
+
+// Spawn a collectible item at the given position with config.
+EntityId spawnItem(World& w, const ShmupItemConfig& cfg, float x, float y);
+
+// Process item drops when an enemy dies.
+void processEnemyDrop(World& w, const ShmupEnemyConfig& cfg, float x, float y);
+
+// Update item movement (float, bounce, magnetize toward player).
+void itemMovement(World& w, TimeStep ts);
+
+// Check player-item collision, apply effects (weapon upgrade, life, etc.).
+void itemPickup(World& w);
 
 }  // namespace ShmupSystems
 

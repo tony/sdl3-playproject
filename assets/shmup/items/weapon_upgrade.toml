@@ -1,0 +1,20 @@
+version = 1
+
+[item]
+id = "weapon_upgrade"
+display = "Power-Up"
+
+[effect]
+type = "weapon_upgrade"
+value = 1
+
+[pickup]
+radius = 24.0
+lifetime_frames = 600
+magnet_range = 100.0
+magnet_speed = 6.0
+
+[movement]
+type = "float"
+velocity_x = -0.5
+velocity_y = 0.5

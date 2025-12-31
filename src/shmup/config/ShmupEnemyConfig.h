@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace shmup {
 
@@ -114,6 +115,17 @@ struct ShmupEnemyConfig {
       return (it != sheets.end()) ? it->second : sheets.begin()->second;
     }
   } render;
+
+  // Item drop configuration
+  struct DropEntry {
+    std::string itemId;        // Item config ID to drop
+    float probability = 0.1F;  // Probability 0.0-1.0
+  };
+
+  struct DropTable {
+    std::vector<DropEntry> entries;
+    bool guaranteedDrop = false;  // If true, at least one entry drops
+  } drops;
 
   bool loadFromToml(const char* path);
 };

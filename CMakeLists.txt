@@ -51,6 +51,7 @@ set(SHMUP_SOURCES
   src/shmup/config/SatelliteConfig.cpp
   src/shmup/config/ShmupEnemyConfig.cpp
   src/shmup/config/ShmupBossConfig.cpp
+  src/shmup/config/ShmupItemConfig.cpp
   src/shmup/config/LevelConfig.cpp
   src/shmup/controller/ShmupController.cpp
   src/shmup/controller/FirePatterns.cpp

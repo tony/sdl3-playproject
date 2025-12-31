@@ -273,6 +273,47 @@ struct BossState {
 };
 
 // =============================================================================
+// Item Components (Power-ups)
+// =============================================================================
+
+struct ShmupItemTag {};  // Tag for collectible power-up items
+
+enum class ItemEffectType : std::uint8_t {
+  WeaponUpgrade,  // Increase weapon level
+  Life,           // Grant extra life
+  Bomb,           // Grant bomb stock
+  ScoreBonus,     // Add to score
+  Shield,         // Grant temporary invincibility
+  FullPower,      // Max out weapon level
+};
+
+struct ItemState {
+  std::string itemId;
+  ItemEffectType effectType = ItemEffectType::ScoreBonus;
+  int effectValue = 100;
+  int lifetimeFrames = 600;  // 10 seconds at 60fps
+  int ageFrames = 0;
+  float pickupRadius = 24.0F;
+  bool magnetized = false;
+};
+
+enum class ItemMovementType : std::uint8_t {
+  Float,       // Drift downward slowly
+  Bounce,      // Bounce off screen edges
+  Magnet,      // Always move toward player
+  Stationary,  // Stay in place
+};
+
+struct ItemMovement {
+  ItemMovementType type = ItemMovementType::Float;
+  float velocityX = 0.0F;
+  float velocityY = 0.5F;
+  float magnetRange = 100.0F;
+  float magnetSpeed = 6.0F;
+  float bounceSpeed = 2.0F;
+};
+
+// =============================================================================
 // Player Input (normalized from SDL)
 // =============================================================================
 

@@ -21,3 +21,14 @@ velocity_y = 0.0
 
 [fire]
 type = "none"
+
+[drops]
+guaranteed_drop = false
+
+[[drops.entries]]
+item_id = "score_small"
+probability = 0.3
+
+[[drops.entries]]
+item_id = "weapon_upgrade"
+probability = 0.05

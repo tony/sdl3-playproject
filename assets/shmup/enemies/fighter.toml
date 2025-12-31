@@ -33,3 +33,18 @@ damage = 1.0
 lifetime_frames = 180
 w = 8.0
 h = 8.0
+
+[drops]
+guaranteed_drop = false
+
+[[drops.entries]]
+item_id = "score_small"
+probability = 0.4
+
+[[drops.entries]]
+item_id = "weapon_upgrade"
+probability = 0.1
+
+[[drops.entries]]
+item_id = "shield"
+probability = 0.02

@@ -1,0 +1,20 @@
+version = 1
+
+[item]
+id = "score_small"
+display = "100 pts"
+
+[effect]
+type = "score_bonus"
+value = 100
+
+[pickup]
+radius = 20.0
+lifetime_frames = 300
+magnet_range = 120.0
+magnet_speed = 8.0
+
+[movement]
+type = "float"
+velocity_x = -0.3
+velocity_y = 0.8

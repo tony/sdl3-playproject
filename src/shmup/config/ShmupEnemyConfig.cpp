@@ -253,6 +253,29 @@ bool ShmupEnemyConfig::loadFromToml([[maybe_unused]] const char* path) {
       }
     }
 
+    // Parse [drops] section
+    if (auto d = tbl["drops"].as_table()) {
+      if (auto val = (*d)["guaranteed_drop"].value<bool>()) {
+        drops.guaranteedDrop = *val;
+      }
+    }
+
+    // Parse [[drops.entries]] array
+    if (auto entriesArr = tbl["drops"]["entries"].as_array()) {
+      for (const auto& entryNode : *entriesArr) {
+        if (auto e = entryNode.as_table()) {
+          DropEntry entry;
+          if (auto val = (*e)["item_id"].value<std::string>()) {
+            entry.itemId = *val;
+          }
+          if (auto val = (*e)["probability"].value<double>()) {
+            entry.probability = static_cast<float>(*val);
+          }
+          drops.entries.push_back(entry);
+        }
+      }
+    }
+
     return true;
   };
 

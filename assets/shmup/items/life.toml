@@ -1,0 +1,21 @@
+version = 1
+
+[item]
+id = "life"
+display = "1UP"
+
+[effect]
+type = "life"
+value = 1
+
+[pickup]
+radius = 28.0
+lifetime_frames = 900
+magnet_range = 80.0
+magnet_speed = 5.0
+
+[movement]
+type = "bounce"
+velocity_x = 1.0
+velocity_y = 1.0
+bounce_speed = 2.0

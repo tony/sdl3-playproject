@@ -11,12 +11,20 @@
 #include "shmup/config/LevelConfig.h"
 #include "shmup/config/ShmupBossConfig.h"
 #include "shmup/config/ShmupEnemyConfig.h"
+#include "shmup/config/ShmupItemConfig.h"
 #include "shmup/config/WeaponConfig.h"
 #include "shmup/controller/FirePatterns.h"
+
+#include <cstdlib>
 
 namespace shmup {
 
 namespace {
+
+// Simple RNG for item drops (0.0 to 1.0)
+float randomFloat() {
+  return static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+}
 
 constexpr float kPi = 3.14159265358979323846F;
 
@@ -416,6 +424,11 @@ void ShmupSystems::collision(World& w) {
         --proj.pierceRemaining;
 
         if (enemy.health <= 0) {
+          // Process item drops before removing enemy
+          const ShmupEnemyConfig* cfg = ShmupEnemyRegistry::get(enemy.typeId);
+          if (cfg != nullptr) {
+            processEnemyDrop(w, *cfg, enemyT.pos.x, enemyT.pos.y);
+          }
           enemiesToRemove.push_back(enemyEnt);
         }
 
@@ -555,6 +568,20 @@ void ShmupSystems::cleanup(World& w) {
   for (auto [entity, ship] : playerView.each()) {
     if (ship.invincibleFrames > 0) {
       --ship.invincibleFrames;
+    }
+  }
+
+  // Expire old items
+  std::vector<EntityId> itemsToRemove;
+  auto itemView = w.registry.view<ShmupItemTag, ItemState>();
+  for (auto [entity, state] : itemView.each()) {
+    if (state.ageFrames >= state.lifetimeFrames) {
+      itemsToRemove.push_back(entity);
+    }
+  }
+  for (EntityId e : itemsToRemove) {
+    if (w.registry.valid(e)) {
+      w.destroy(e);
     }
   }
 }
@@ -1054,6 +1081,237 @@ void WaveSpawner::reset() {
   nextWaveIndex = 0;
   nextBossIndex = 0;
   lastScrollX = 0.0F;
+}
+
+// =============================================================================
+// Item Systems
+// =============================================================================
+
+EntityId ShmupSystems::spawnItem(World& w, const ShmupItemConfig& cfg, float x, float y) {
+  EntityId id = w.create();
+  auto& reg = w.registry;
+
+  reg.emplace<Transform>(id, Vec2{x, y});
+  reg.emplace<ShmupItemTag>(id);
+
+  // Set up item state
+  ItemState state;
+  state.itemId = cfg.id;
+  // Map config effect type to component effect type
+  switch (cfg.effect.type) {
+    case ShmupItemConfig::EffectType::WeaponUpgrade:
+      state.effectType = ItemEffectType::WeaponUpgrade;
+      break;
+    case ShmupItemConfig::EffectType::Life:
+      state.effectType = ItemEffectType::Life;
+      break;
+    case ShmupItemConfig::EffectType::Bomb:
+      state.effectType = ItemEffectType::Bomb;
+      break;
+    case ShmupItemConfig::EffectType::ScoreBonus:
+      state.effectType = ItemEffectType::ScoreBonus;
+      break;
+    case ShmupItemConfig::EffectType::Shield:
+      state.effectType = ItemEffectType::Shield;
+      break;
+    case ShmupItemConfig::EffectType::FullPower:
+      state.effectType = ItemEffectType::FullPower;
+      break;
+  }
+  state.effectValue = cfg.effect.value;
+  state.lifetimeFrames = cfg.pickup.lifetimeFrames;
+  state.pickupRadius = cfg.pickup.radius;
+  state.ageFrames = 0;
+  state.magnetized = false;
+  reg.emplace<ItemState>(id, state);
+
+  // Set up item movement
+  ItemMovement move;
+  switch (cfg.movement.type) {
+    case ShmupItemConfig::MovementType::Float:
+      move.type = ItemMovementType::Float;
+      break;
+    case ShmupItemConfig::MovementType::Bounce:
+      move.type = ItemMovementType::Bounce;
+      break;
+    case ShmupItemConfig::MovementType::Magnet:
+      move.type = ItemMovementType::Magnet;
+      break;
+    case ShmupItemConfig::MovementType::Stationary:
+      move.type = ItemMovementType::Stationary;
+      break;
+  }
+  move.velocityX = cfg.movement.velocityX;
+  move.velocityY = cfg.movement.velocityY;
+  move.magnetRange = cfg.pickup.magnetRange;
+  move.magnetSpeed = cfg.pickup.magnetSpeed;
+  move.bounceSpeed = cfg.movement.bounceSpeed;
+  reg.emplace<ItemMovement>(id, move);
+
+  return id;
+}
+
+void ShmupSystems::processEnemyDrop(World& w, const ShmupEnemyConfig& cfg, float x, float y) {
+  if (cfg.drops.entries.empty()) {
+    return;
+  }
+
+  bool droppedSomething = false;
+
+  for (const auto& entry : cfg.drops.entries) {
+    float roll = randomFloat();
+    if (roll < entry.probability) {
+      const ShmupItemConfig* itemCfg = ShmupItemRegistry::get(entry.itemId);
+      if (itemCfg != nullptr) {
+        spawnItem(w, *itemCfg, x, y);
+        droppedSomething = true;
+      }
+    }
+  }
+
+  // Handle guaranteed drop - if nothing dropped, force the first entry
+  if (!droppedSomething && cfg.drops.guaranteedDrop && !cfg.drops.entries.empty()) {
+    const auto& entry = cfg.drops.entries[0];
+    const ShmupItemConfig* itemCfg = ShmupItemRegistry::get(entry.itemId);
+    if (itemCfg != nullptr) {
+      spawnItem(w, *itemCfg, x, y);
+    }
+  }
+}
+
+void ShmupSystems::itemMovement(World& w, TimeStep ts) {
+  auto view = w.registry.view<ShmupItemTag, ItemState, ItemMovement, Transform>();
+
+  constexpr float kScreenW = 1280.0F;
+  constexpr float kScreenH = 720.0F;
+  constexpr float kMargin = 16.0F;
+
+  for (auto [entity, state, move, t] : view.each()) {
+    // Check for magnetization (player proximity)
+    if (w.player != kInvalidEntity && w.registry.valid(w.player)) {
+      const auto& playerT = w.registry.get<Transform>(w.player);
+      float dx = playerT.pos.x - t.pos.x;
+      float dy = playerT.pos.y - t.pos.y;
+      float distSq = dx * dx + dy * dy;
+
+      if (distSq < move.magnetRange * move.magnetRange) {
+        state.magnetized = true;
+      }
+    }
+
+    if (state.magnetized && w.player != kInvalidEntity && w.registry.valid(w.player)) {
+      // Move toward player
+      const auto& playerT = w.registry.get<Transform>(w.player);
+      float dx = playerT.pos.x - t.pos.x;
+      float dy = playerT.pos.y - t.pos.y;
+      float dist = std::sqrt(dx * dx + dy * dy);
+      if (dist > 1.0F) {
+        t.pos.x += (dx / dist) * move.magnetSpeed;
+        t.pos.y += (dy / dist) * move.magnetSpeed;
+      }
+    } else {
+      // Normal movement based on type
+      switch (move.type) {
+        case ItemMovementType::Float:
+          t.pos.x += move.velocityX;
+          t.pos.y += move.velocityY;
+          break;
+
+        case ItemMovementType::Bounce:
+          t.pos.x += move.velocityX;
+          t.pos.y += move.velocityY;
+          // Bounce off screen edges
+          if (t.pos.x < kMargin) {
+            t.pos.x = kMargin;
+            move.velocityX = std::abs(move.velocityX);
+          } else if (t.pos.x > kScreenW - kMargin) {
+            t.pos.x = kScreenW - kMargin;
+            move.velocityX = -std::abs(move.velocityX);
+          }
+          if (t.pos.y < kMargin) {
+            t.pos.y = kMargin;
+            move.velocityY = std::abs(move.velocityY);
+          } else if (t.pos.y > kScreenH - kMargin) {
+            t.pos.y = kScreenH - kMargin;
+            move.velocityY = -std::abs(move.velocityY);
+          }
+          break;
+
+        case ItemMovementType::Magnet:
+          // Always magnetize (handled above when player exists)
+          break;
+
+        case ItemMovementType::Stationary:
+          // No movement
+          break;
+      }
+    }
+
+    // Increment age
+    ++state.ageFrames;
+  }
+
+  (void)ts;  // Reserved for time-based animations
+}
+
+void ShmupSystems::itemPickup(World& w) {
+  auto itemView = w.registry.view<ShmupItemTag, ItemState, Transform>();
+  auto playerView = w.registry.view<ShmupPlayerTag, ShipState, WeaponState, Transform>();
+
+  std::vector<EntityId> toRemove;
+
+  for (auto [itemEnt, itemState, itemT] : itemView.each()) {
+    for (auto [playerEnt, ship, weapons, playerT] : playerView.each()) {
+      float dx = playerT.pos.x - itemT.pos.x;
+      float dy = playerT.pos.y - itemT.pos.y;
+      float distSq = dx * dx + dy * dy;
+      float pickupRadiusSq = itemState.pickupRadius * itemState.pickupRadius;
+
+      if (distSq < pickupRadiusSq) {
+        // Apply effect based on type
+        switch (itemState.effectType) {
+          case ItemEffectType::WeaponUpgrade:
+            // Upgrade active weapon level (max 4)
+            if (!weapons.mounts.empty()) {
+              auto& mount = weapons.mounts[static_cast<std::size_t>(weapons.activeSlot)];
+              mount.level = std::min(4, mount.level + itemState.effectValue);
+            }
+            break;
+
+          case ItemEffectType::Life:
+            ship.lives += itemState.effectValue;
+            break;
+
+          case ItemEffectType::Bomb:
+            // Would need SessionState for bombs - skip for now
+            break;
+
+          case ItemEffectType::ScoreBonus:
+            // Would need score tracking in World - skip for now
+            break;
+
+          case ItemEffectType::Shield:
+            ship.invincibleFrames = std::max(ship.invincibleFrames, itemState.effectValue);
+            break;
+
+          case ItemEffectType::FullPower:
+            for (auto& mount : weapons.mounts) {
+              mount.level = 4;  // MAX
+            }
+            break;
+        }
+
+        toRemove.push_back(itemEnt);
+        break;  // Item collected
+      }
+    }
+  }
+
+  for (EntityId e : toRemove) {
+    if (w.registry.valid(e)) {
+      w.destroy(e);
+    }
+  }
 }
 
 }  // namespace shmup
