@@ -6,6 +6,7 @@
 #include <string>
 
 #include "core/Input.h"
+#include "core/SpriteCache.h"
 #include "core/Time.h"
 #include "ecs/World.h"
 #include "shmup/controller/ShmupController.h"
@@ -57,6 +58,7 @@ class ShmupGame {
   void renderHUD(SDL_Renderer* renderer, int viewW, int viewH);
 
   SDL_Renderer* renderer_ = nullptr;
+  SpriteCache spriteCache_;
   World world_;
   ShmupController controller_;
 

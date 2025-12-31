@@ -52,6 +52,22 @@ EntityId ShmupController::spawnPlayer(World& world,
   }
   reg.emplace<WeaponState>(id, weapons);
 
+  // Add sprite from ship render config
+  if (!shipCfg.render.sheets.empty()) {
+    ShmupSprite sprite;
+    // Use "east" direction (facing right) for horizontal shmup
+    auto it = shipCfg.render.sheets.find("east");
+    if (it != shipCfg.render.sheets.end()) {
+      sprite.texturePath = it->second;
+    }
+    sprite.frameW = shipCfg.render.frameW;
+    sprite.frameH = shipCfg.render.frameH;
+    sprite.scale = shipCfg.render.scale;
+    sprite.offsetX = shipCfg.render.offsetX;
+    sprite.offsetY = shipCfg.render.offsetY;
+    reg.emplace<ShmupSprite>(id, sprite);
+  }
+
   player_ = id;
   world.player = id;  // Also set World's player handle
 
@@ -115,6 +131,18 @@ EntityId ShmupController::spawnSatellite(World& world,
   }
 
   reg.emplace<SatelliteState>(id, sat);
+
+  // Add sprite from satellite render config
+  if (!satCfg.render.sprite.empty()) {
+    ShmupSprite sprite;
+    sprite.texturePath = satCfg.render.sprite;
+    sprite.frameW = satCfg.render.frameW;
+    sprite.frameH = satCfg.render.frameH;
+    sprite.frameCount = satCfg.render.frameCount;
+    sprite.frameRate = satCfg.render.fps;
+    sprite.scale = satCfg.render.scale;
+    reg.emplace<ShmupSprite>(id, sprite);
+  }
 
   satellites_.push_back(id);
   return id;

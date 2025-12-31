@@ -11,7 +11,10 @@
 namespace shmup {
 
 ShmupGame::ShmupGame() = default;
-ShmupGame::~ShmupGame() = default;
+
+ShmupGame::~ShmupGame() {
+  spriteCache_.shutdown();
+}
 
 bool ShmupGame::init(SDL_Renderer* renderer, const Config& cfg) {
   renderer_ = renderer;
@@ -21,6 +24,7 @@ bool ShmupGame::init(SDL_Renderer* renderer, const Config& cfg) {
   spawnY_ = cfg.spawnY;
   lives_ = 3;
 
+  spriteCache_.init(renderer);
   controller_.setLives(lives_);
 
   spawnPlayerShip();
@@ -112,9 +116,25 @@ void ShmupGame::renderBackground(SDL_Renderer* renderer, int viewW, int viewH) {
 }
 
 void ShmupGame::renderEntities(SDL_Renderer* renderer) {
-  // Render projectiles (small colored rectangles)
+  // Render projectiles (colored rectangles - sprites optional)
   auto projView = world_.registry.view<ShmupProjectileTag, ShmupProjectileState, Transform>();
   for (auto [entity, proj, t] : projView.each()) {
+    // Check for sprite
+    const auto* sprite = world_.registry.try_get<ShmupSprite>(entity);
+    if (sprite != nullptr && !sprite->texturePath.empty()) {
+      SDL_Texture* tex = spriteCache_.get(sprite->texturePath);
+      if (tex != nullptr) {
+        float w = static_cast<float>(sprite->frameW) * sprite->scale;
+        float h = static_cast<float>(sprite->frameH) * sprite->scale;
+        SDL_FRect srcRect{static_cast<float>(sprite->frame * sprite->frameW), 0.0F,
+                          static_cast<float>(sprite->frameW), static_cast<float>(sprite->frameH)};
+        SDL_FRect dstRect{t.pos.x - w * 0.5F + sprite->offsetX,
+                          t.pos.y - h * 0.5F + sprite->offsetY, w, h};
+        SDL_RenderTexture(renderer, tex, &srcRect, &dstRect);
+        continue;
+      }
+    }
+    // Fallback: colored rectangle
     SDL_FRect rect;
     rect.w = 6.0F;
     rect.h = 12.0F;
@@ -129,37 +149,77 @@ void ShmupGame::renderEntities(SDL_Renderer* renderer) {
     SDL_RenderFillRect(renderer, &rect);
   }
 
-  // Render satellites (small cyan circles represented as rects for now)
+  // Render satellites
   auto satView = world_.registry.view<ShmupSatelliteTag, Transform>();
   for (auto [entity, t] : satView.each()) {
+    // Check for sprite
+    const auto* sprite = world_.registry.try_get<ShmupSprite>(entity);
+    if (sprite != nullptr && !sprite->texturePath.empty()) {
+      SDL_Texture* tex = spriteCache_.get(sprite->texturePath);
+      if (tex != nullptr) {
+        float w = static_cast<float>(sprite->frameW) * sprite->scale;
+        float h = static_cast<float>(sprite->frameH) * sprite->scale;
+        SDL_FRect srcRect{static_cast<float>(sprite->frame * sprite->frameW), 0.0F,
+                          static_cast<float>(sprite->frameW), static_cast<float>(sprite->frameH)};
+        SDL_FRect dstRect{t.pos.x - w * 0.5F + sprite->offsetX,
+                          t.pos.y - h * 0.5F + sprite->offsetY, w, h};
+        SDL_RenderTexture(renderer, tex, &srcRect, &dstRect);
+        continue;
+      }
+    }
+    // Fallback: cyan rectangle
     SDL_FRect rect;
     rect.w = 12.0F;
     rect.h = 12.0F;
     rect.x = t.pos.x - rect.w * 0.5F;
     rect.y = t.pos.y - rect.h * 0.5F;
-
-    SDL_SetRenderDrawColor(renderer, 0, 255, 200, 255);  // Cyan
+    SDL_SetRenderDrawColor(renderer, 0, 255, 200, 255);
     SDL_RenderFillRect(renderer, &rect);
   }
 
-  // Render player (green rectangle placeholder)
+  // Render player
   auto playerView = world_.registry.view<ShmupPlayerTag, ShipState, Transform>();
   for (auto [entity, ship, t] : playerView.each()) {
-    SDL_FRect rect;
-    rect.w = 32.0F;
-    rect.h = 24.0F;
-    rect.x = t.pos.x - rect.w * 0.5F;
-    rect.y = t.pos.y - rect.h * 0.5F;
+    bool rendered = false;
 
-    // Flash when invincible
-    if (ship.invincibleFrames > 0 && (ship.invincibleFrames / 4) % 2 == 0) {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128);
-    } else if (ship.focused) {
-      SDL_SetRenderDrawColor(renderer, 100, 255, 100, 255);  // Lighter green when focused
-    } else {
-      SDL_SetRenderDrawColor(renderer, 50, 200, 50, 255);  // Normal green
+    // Check for sprite
+    const auto* sprite = world_.registry.try_get<ShmupSprite>(entity);
+    if (sprite != nullptr && !sprite->texturePath.empty()) {
+      SDL_Texture* tex = spriteCache_.get(sprite->texturePath);
+      if (tex != nullptr) {
+        // Skip rendering on invincibility flash frames
+        if (ship.invincibleFrames > 0 && (ship.invincibleFrames / 4) % 2 == 0) {
+          // Flash: skip every other 4-frame period
+        } else {
+          float w = static_cast<float>(sprite->frameW) * sprite->scale;
+          float h = static_cast<float>(sprite->frameH) * sprite->scale;
+          SDL_FRect srcRect{static_cast<float>(sprite->frame * sprite->frameW), 0.0F,
+                            static_cast<float>(sprite->frameW), static_cast<float>(sprite->frameH)};
+          SDL_FRect dstRect{t.pos.x - w * 0.5F + sprite->offsetX,
+                            t.pos.y - h * 0.5F + sprite->offsetY, w, h};
+          SDL_RenderTexture(renderer, tex, &srcRect, &dstRect);
+        }
+        rendered = true;
+      }
     }
-    SDL_RenderFillRect(renderer, &rect);
+
+    // Fallback: green rectangle
+    if (!rendered) {
+      SDL_FRect rect;
+      rect.w = 32.0F;
+      rect.h = 24.0F;
+      rect.x = t.pos.x - rect.w * 0.5F;
+      rect.y = t.pos.y - rect.h * 0.5F;
+
+      if (ship.invincibleFrames > 0 && (ship.invincibleFrames / 4) % 2 == 0) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128);
+      } else if (ship.focused) {
+        SDL_SetRenderDrawColor(renderer, 100, 255, 100, 255);
+      } else {
+        SDL_SetRenderDrawColor(renderer, 50, 200, 50, 255);
+      }
+      SDL_RenderFillRect(renderer, &rect);
+    }
 
     // Draw hitbox indicator when focused
     if (ship.focused) {
@@ -173,9 +233,25 @@ void ShmupGame::renderEntities(SDL_Renderer* renderer) {
     }
   }
 
-  // Render enemies (red rectangles)
+  // Render enemies
   auto enemyView = world_.registry.view<ShmupEnemyTag, ShmupEnemyState, Transform>();
   for (auto [entity, enemy, t] : enemyView.each()) {
+    // Check for sprite
+    const auto* sprite = world_.registry.try_get<ShmupSprite>(entity);
+    if (sprite != nullptr && !sprite->texturePath.empty()) {
+      SDL_Texture* tex = spriteCache_.get(sprite->texturePath);
+      if (tex != nullptr) {
+        float w = static_cast<float>(sprite->frameW) * sprite->scale;
+        float h = static_cast<float>(sprite->frameH) * sprite->scale;
+        SDL_FRect srcRect{static_cast<float>(sprite->frame * sprite->frameW), 0.0F,
+                          static_cast<float>(sprite->frameW), static_cast<float>(sprite->frameH)};
+        SDL_FRect dstRect{t.pos.x - w * 0.5F + sprite->offsetX,
+                          t.pos.y - h * 0.5F + sprite->offsetY, w, h};
+        SDL_RenderTexture(renderer, tex, &srcRect, &dstRect);
+        continue;
+      }
+    }
+    // Fallback: red rectangle
     SDL_FRect rect;
     rect.w = 28.0F;
     rect.h = 20.0F;
@@ -183,9 +259,9 @@ void ShmupGame::renderEntities(SDL_Renderer* renderer) {
     rect.y = t.pos.y - rect.h * 0.5F;
 
     if (enemy.invulnerable) {
-      SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);  // Gray when invulnerable
+      SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
     } else {
-      SDL_SetRenderDrawColor(renderer, 200, 50, 50, 255);  // Red normally
+      SDL_SetRenderDrawColor(renderer, 200, 50, 50, 255);
     }
     SDL_RenderFillRect(renderer, &rect);
   }
