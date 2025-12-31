@@ -8,6 +8,8 @@
 #include "ecs/Components.h"
 #include "ecs/World.h"
 #include "shmup/components/ShmupComponents.h"
+#include "shmup/config/LevelConfig.h"
+#include "shmup/config/ShmupEnemyConfig.h"
 #include "shmup/config/WeaponConfig.h"
 #include "shmup/controller/FirePatterns.h"
 
@@ -24,6 +26,55 @@ float lerp(float a, float b, float t) {
 // Smoothly interpolate between two values over time
 float lerpSmooth(float current, float target, float smoothing, float dt) {
   return lerp(current, target, 1.0F - std::exp(-smoothing * dt));
+}
+
+// Spawn enemy projectile based on fire pattern
+void fireEnemyShot(World& w, EntityId enemy, const Transform& enemyT, Firing& fire) {
+  // Calculate aim angle based on pattern type
+  float angle = fire.aimAngle;
+
+  if (fire.type == FireType::Aimed && w.player != kInvalidEntity && w.registry.valid(w.player)) {
+    const auto& playerT = w.registry.get<Transform>(w.player);
+    float dx = playerT.pos.x - enemyT.pos.x;
+    float dy = playerT.pos.y - enemyT.pos.y;
+    angle = std::atan2(dy, dx);
+    fire.aimAngle = angle;
+  } else if (fire.type == FireType::Circular) {
+    angle = fire.rotationAngle;
+    fire.rotationAngle += fire.rotationSpeed;
+  }
+
+  // Spawn projectiles
+  const float spreadStep =
+      (fire.shotCount > 1) ? fire.spreadAngle / static_cast<float>(fire.shotCount - 1) : 0.0F;
+  const float startAngle = (fire.shotCount > 1) ? angle - fire.spreadAngle * 0.5F : angle;
+
+  for (int i = 0; i < fire.shotCount; ++i) {
+    float shotAngle = startAngle + spreadStep * static_cast<float>(i);
+
+    EntityId id = w.create();
+    auto& reg = w.registry;
+
+    reg.emplace<Transform>(id, enemyT.pos);
+
+    constexpr float kDefaultProjectileSpeed = 3.0F;
+    Velocity vel;
+    vel.v.x = std::cos(shotAngle) * kDefaultProjectileSpeed;
+    vel.v.y = std::sin(shotAngle) * kDefaultProjectileSpeed;
+    reg.emplace<Velocity>(id, vel);
+
+    reg.emplace<AABB>(id, 8.0F, 8.0F);
+    reg.emplace<ShmupProjectileTag>(id);
+
+    ShmupProjectileState proj;
+    proj.damage = 1.0F;
+    proj.lifetimeFrames = 180;
+    proj.pierceRemaining = 1;
+    proj.fromPlayer = false;
+    proj.owner = enemy;
+    proj.gravity = 0.0F;
+    reg.emplace<ShmupProjectileState>(id, proj);
+  }
 }
 
 }  // namespace
@@ -381,6 +432,299 @@ void ShmupSystems::cleanup(World& w) {
       --ship.invincibleFrames;
     }
   }
+}
+
+void ShmupSystems::enemyMovement(World& w, TimeStep ts) {
+  auto view = w.registry.view<ShmupEnemyTag, Transform, Movement>();
+
+  for (auto [entity, t, move] : view.each()) {
+    switch (move.type) {
+      case MovementType::None:
+        // Stationary - do nothing
+        break;
+
+      case MovementType::Linear:
+        t.pos.x += move.velocityX;
+        t.pos.y += move.velocityY;
+        break;
+
+      case MovementType::Sine:
+        move.phase += move.frequency;
+        if (move.oscillateY) {
+          t.pos.x += move.velocityX;
+          t.pos.y += std::sin(move.phase) * move.amplitude * move.frequency;
+        } else {
+          t.pos.x += std::cos(move.phase) * move.amplitude * move.frequency;
+          t.pos.y += move.velocityY;
+        }
+        break;
+
+      case MovementType::Chase:
+        if (w.player != kInvalidEntity && w.registry.valid(w.player)) {
+          const auto& playerT = w.registry.get<Transform>(w.player);
+          float dx = playerT.pos.x - t.pos.x;
+          float dy = playerT.pos.y - t.pos.y;
+          float targetAngle = std::atan2(dy, dx);
+
+          // Smooth turn toward target
+          float diff = targetAngle - move.currentAngle;
+          while (diff > kPi)
+            diff -= 2.0F * kPi;
+          while (diff < -kPi)
+            diff += 2.0F * kPi;
+
+          diff = std::clamp(diff, -move.turnRate, move.turnRate);
+          move.currentAngle += diff;
+
+          t.pos.x += std::cos(move.currentAngle) * move.chaseSpeed;
+          t.pos.y += std::sin(move.currentAngle) * move.chaseSpeed;
+        }
+        break;
+
+      case MovementType::Orbit:
+        move.orbitAngle += move.orbitSpeed;
+        if (move.orbitCenter != kInvalidEntity && w.registry.valid(move.orbitCenter)) {
+          const auto& centerT = w.registry.get<Transform>(move.orbitCenter);
+          t.pos.x = centerT.pos.x + std::cos(move.orbitAngle) * move.orbitRadius;
+          t.pos.y = centerT.pos.y + std::sin(move.orbitAngle) * move.orbitRadius;
+        }
+        break;
+
+      case MovementType::Formation:
+        if (move.formationLeader != kInvalidEntity && w.registry.valid(move.formationLeader)) {
+          const auto& leaderT = w.registry.get<Transform>(move.formationLeader);
+          t.pos.x = leaderT.pos.x + move.formationOffsetX;
+          t.pos.y = leaderT.pos.y + move.formationOffsetY;
+        }
+        break;
+
+      case MovementType::Compound:
+        // Reserved for multi-pattern behavior
+        break;
+    }
+
+    // Clamp to vertical bounds
+    t.pos.y = std::clamp(t.pos.y, move.boundsMinY, move.boundsMaxY);
+  }
+
+  (void)ts;  // Reserved for time-based patterns
+}
+
+void ShmupSystems::enemyFiring(World& w, TimeStep ts) {
+  auto view = w.registry.view<ShmupEnemyTag, Transform, Firing>();
+
+  for (auto [entity, t, fire] : view.each()) {
+    if (fire.type == FireType::None) {
+      continue;
+    }
+
+    // Handle initial delay
+    if (fire.initialDelay > 0.0F) {
+      fire.initialDelay -= ts.dt;
+      continue;
+    }
+
+    // Update fire timer
+    fire.timeSinceFire += ts.dt;
+
+    // Handle burst firing
+    if (fire.shotsRemaining > 0) {
+      fire.burstTimer -= ts.dt;
+      if (fire.burstTimer <= 0.0F) {
+        fireEnemyShot(w, entity, t, fire);
+        --fire.shotsRemaining;
+        fire.burstTimer = fire.burstInterval;
+      }
+      continue;
+    }
+
+    // Check if ready to fire
+    if (fire.timeSinceFire >= fire.fireInterval) {
+      fire.timeSinceFire = 0.0F;
+      fire.shotsRemaining = fire.shotsPerBurst - 1;
+      fire.burstTimer = fire.burstInterval;
+      fireEnemyShot(w, entity, t, fire);
+    }
+  }
+}
+
+EntityId ShmupSystems::spawnEnemy(World& w, const ShmupEnemyConfig& cfg, float x, float y) {
+  EntityId id = w.create();
+  auto& reg = w.registry;
+
+  reg.emplace<Transform>(id, Vec2{x, y});
+  reg.emplace<AABB>(id, cfg.collision.w, cfg.collision.h);
+  reg.emplace<ShmupEnemyTag>(id);
+
+  ShmupEnemyState enemy;
+  enemy.typeId = cfg.id;
+  enemy.health = cfg.stats.health;
+  enemy.maxHealth = cfg.stats.health;
+  enemy.scoreValue = cfg.stats.scoreValue;
+  enemy.damageOnContact = static_cast<int>(cfg.stats.contactDamage);
+  enemy.invulnerable = cfg.stats.invulnerable;
+  reg.emplace<ShmupEnemyState>(id, enemy);
+
+  // Set up movement component
+  Movement move;
+  switch (cfg.movement.type) {
+    case ShmupEnemyConfig::MovementType::None:
+      move.type = MovementType::None;
+      break;
+    case ShmupEnemyConfig::MovementType::Linear:
+      move.type = MovementType::Linear;
+      break;
+    case ShmupEnemyConfig::MovementType::Sine:
+      move.type = MovementType::Sine;
+      break;
+    case ShmupEnemyConfig::MovementType::Chase:
+      move.type = MovementType::Chase;
+      break;
+    case ShmupEnemyConfig::MovementType::Orbit:
+      move.type = MovementType::Orbit;
+      break;
+    case ShmupEnemyConfig::MovementType::Formation:
+      move.type = MovementType::Formation;
+      break;
+  }
+  move.velocityX = cfg.movement.velocityX;
+  move.velocityY = cfg.movement.velocityY;
+  move.amplitude = cfg.movement.amplitude;
+  move.frequency = cfg.movement.frequency;
+  move.oscillateY = cfg.movement.oscillateY;
+  move.chaseSpeed = cfg.movement.chaseSpeed;
+  move.turnRate = cfg.movement.turnRate;
+  move.orbitRadius = cfg.movement.orbitRadius;
+  move.orbitSpeed = cfg.movement.orbitSpeed;
+  reg.emplace<Movement>(id, move);
+
+  // Set up firing component
+  if (cfg.fire.type != ShmupEnemyConfig::FireType::None) {
+    Firing fire;
+    switch (cfg.fire.type) {
+      case ShmupEnemyConfig::FireType::None:
+        fire.type = FireType::None;
+        break;
+      case ShmupEnemyConfig::FireType::Aimed:
+        fire.type = FireType::Aimed;
+        break;
+      case ShmupEnemyConfig::FireType::Spread:
+        fire.type = FireType::Spread;
+        break;
+      case ShmupEnemyConfig::FireType::Circular:
+        fire.type = FireType::Circular;
+        break;
+    }
+    fire.fireInterval = cfg.fire.fireInterval;
+    fire.initialDelay = static_cast<float>(cfg.fire.warmupFrames) / 60.0F;
+    fire.shotCount = cfg.fire.shotCount;
+    fire.spreadAngle = cfg.fire.spreadAngle;
+    fire.rotationSpeed = cfg.fire.rotationSpeed;
+    reg.emplace<Firing>(id, fire);
+  }
+
+  return id;
+}
+
+// WaveSpawner implementation
+void WaveSpawner::init(const LevelConfig* levelCfg) {
+  level = levelCfg;
+  nextWaveIndex = 0;
+  lastScrollX = 0.0F;
+}
+
+void WaveSpawner::update(World& w, float scrollX) {
+  if (level == nullptr) {
+    return;
+  }
+
+  // Check for waves to spawn
+  while (nextWaveIndex < level->waves.size()) {
+    const auto& wave = level->waves[nextWaveIndex];
+
+    // Check if we've scrolled past the trigger position
+    if (scrollX < wave.triggerPosition) {
+      break;  // Not yet triggered
+    }
+
+    // Spawn this wave
+    const ShmupEnemyConfig* enemyCfg = ShmupEnemyRegistry::get(wave.enemyType);
+    if (enemyCfg == nullptr) {
+      ++nextWaveIndex;
+      continue;
+    }
+
+    // Calculate spawn positions based on formation
+    std::vector<Vec2> positions;
+    float baseX = wave.spawnX;
+    float baseY = wave.spawnY;
+
+    switch (wave.formation) {
+      case LevelConfig::Formation::Single:
+        positions.push_back({baseX, baseY});
+        break;
+
+      case LevelConfig::Formation::Line:
+        for (int i = 0; i < wave.count; ++i) {
+          positions.push_back(
+              {baseX, baseY + (static_cast<float>(i) - static_cast<float>(wave.count - 1) * 0.5F) *
+                                  wave.spacing});
+        }
+        break;
+
+      case LevelConfig::Formation::Column:
+        for (int i = 0; i < wave.count; ++i) {
+          positions.push_back({baseX + static_cast<float>(i) * wave.spacing, baseY});
+        }
+        break;
+
+      case LevelConfig::Formation::VShape:
+        for (int i = 0; i < wave.count; ++i) {
+          float offset = static_cast<float>(i) - static_cast<float>(wave.count - 1) * 0.5F;
+          positions.push_back(
+              {baseX + std::abs(offset) * wave.spacing * 0.5F, baseY + offset * wave.spacing});
+        }
+        break;
+
+      case LevelConfig::Formation::InverseV:
+        for (int i = 0; i < wave.count; ++i) {
+          float offset = static_cast<float>(i) - static_cast<float>(wave.count - 1) * 0.5F;
+          positions.push_back(
+              {baseX - std::abs(offset) * wave.spacing * 0.5F, baseY + offset * wave.spacing});
+        }
+        break;
+
+      case LevelConfig::Formation::Diagonal:
+        for (int i = 0; i < wave.count; ++i) {
+          positions.push_back({baseX + static_cast<float>(i) * wave.spacing * 0.5F,
+                               baseY + static_cast<float>(i) * wave.spacing});
+        }
+        break;
+
+      case LevelConfig::Formation::Random:
+        for (int i = 0; i < wave.count; ++i) {
+          float rx = baseX + static_cast<float>((i * 7 + 13) % 100) * 0.01F * wave.spacing;
+          float ry = baseY + static_cast<float>((i * 17 + 7) % 100 - 50) * 0.02F * wave.spacing;
+          positions.push_back({rx, ry});
+        }
+        break;
+    }
+
+    // Spawn enemies at calculated positions
+    for (const auto& pos : positions) {
+      ShmupSystems::spawnEnemy(w, *enemyCfg, pos.x, pos.y);
+    }
+
+    ++nextWaveIndex;
+  }
+
+  lastScrollX = scrollX;
+}
+
+void WaveSpawner::reset() {
+  level = nullptr;
+  nextWaveIndex = 0;
+  lastScrollX = 0.0F;
 }
 
 }  // namespace shmup

@@ -4,6 +4,7 @@
 #include "ecs/Components.h"
 #include "ecs/World.h"
 #include "shmup/components/ShmupComponents.h"
+#include "shmup/config/LevelConfig.h"
 #include "shmup/config/SatelliteConfig.h"
 #include "shmup/config/ShipConfig.h"
 #include "shmup/config/WeaponConfig.h"
@@ -118,6 +119,13 @@ EntityId ShmupController::spawnSatellite(World& world,
   return id;
 }
 
+void ShmupController::loadLevel(const LevelConfig* levelCfg) {
+  waveSpawner_.init(levelCfg);
+  if (levelCfg != nullptr) {
+    scrollSpeed_ = levelCfg->properties.scrollSpeed;
+  }
+}
+
 void ShmupController::update(World& world, TimeStep ts) {
   if (paused_) {
     return;
@@ -126,10 +134,15 @@ void ShmupController::update(World& world, TimeStep ts) {
   // Update scroll position
   scrollX_ += scrollSpeed_ * ts.dt;
 
+  // Spawn waves based on scroll position
+  waveSpawner_.update(world, scrollX_);
+
   // Run SHMUP systems in order
   ShmupSystems::playerMovement(world, ts);
   ShmupSystems::satelliteUpdate(world);
   ShmupSystems::weaponFiring(world, ts);
+  ShmupSystems::enemyMovement(world, ts);
+  ShmupSystems::enemyFiring(world, ts);
   ShmupSystems::projectiles(world, ts);
   ShmupSystems::collision(world);
   ShmupSystems::cleanup(world);

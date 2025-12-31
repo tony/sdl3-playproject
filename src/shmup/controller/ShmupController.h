@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "ecs/Entity.h"
+#include "shmup/systems/ShmupSystems.h"
 
 class World;
 struct TimeStep;
@@ -13,6 +14,7 @@ namespace shmup {
 struct ShipConfig;
 struct WeaponConfig;
 struct SatelliteConfig;
+struct LevelConfig;
 
 // Runtime state for SHMUP game mode.
 // Manages player ship, satellites, weapons, and game state.
@@ -27,6 +29,9 @@ class ShmupController {
                           EntityId owner,
                           const SatelliteConfig& satCfg,
                           int slotIndex);
+
+  // Load level configuration for wave spawning.
+  void loadLevel(const LevelConfig* levelCfg);
 
   // Update all SHMUP-specific systems for one frame.
   void update(World& world, TimeStep ts);
@@ -50,8 +55,10 @@ class ShmupController {
   float scrollSpeed_ = 60.0F;  // pixels per second
   bool paused_ = false;
 
+  // Wave spawning
+  WaveSpawner waveSpawner_;
+
   // Game state
-  int score_ = 0;
   int lives_ = 3;
 };
 
