@@ -39,6 +39,7 @@ class ShmupController {
 
   void setPaused(bool p) { paused_ = p; }
   void setScrollSpeed(float speed) { scrollSpeed_ = speed; }
+  void setLives(int l) { lives_ = l; }
 
  private:
   EntityId player_ = kInvalidEntity;

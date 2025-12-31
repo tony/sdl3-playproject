@@ -45,6 +45,7 @@ include(cmake/CPM.cmake)
 include(cmake/ThirdParty.cmake)
 
 set(SHMUP_SOURCES
+  src/shmup/ShmupGame.cpp
   src/shmup/config/ShipConfig.cpp
   src/shmup/config/WeaponConfig.cpp
   src/shmup/config/SatelliteConfig.cpp
