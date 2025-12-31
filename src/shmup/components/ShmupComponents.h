@@ -4,46 +4,11 @@
 #include <string>
 #include <vector>
 
-#ifdef SANDBOX_HAS_ENTT
-#include <entt/entt.hpp>
-#endif
+#include "ecs/Entity.h"  // For EntityId and kInvalidEntity
 
 namespace shmup {
 
-// Entity handle type (uses EnTT when available, otherwise a simple alias)
-#ifdef SANDBOX_HAS_ENTT
-using EntityId = entt::entity;
-inline constexpr EntityId kInvalidEntity = entt::null;
-#else
-using EntityId = std::uint32_t;
-inline constexpr EntityId kInvalidEntity = static_cast<EntityId>(-1);
-#endif
-
-// =============================================================================
-// Core Components (shared with other systems)
-// =============================================================================
-
-struct Vec2 {
-  float x = 0.0F;
-  float y = 0.0F;
-
-  Vec2 operator+(const Vec2& rhs) const { return {x + rhs.x, y + rhs.y}; }
-  Vec2 operator-(const Vec2& rhs) const { return {x - rhs.x, y - rhs.y}; }
-  Vec2 operator*(float s) const { return {x * s, y * s}; }
-};
-
-struct Transform {
-  Vec2 pos{};
-};
-
-struct Velocity {
-  Vec2 v{};
-};
-
-struct AABB {
-  float w = 24.0F;
-  float h = 24.0F;
-};
+// Use EntityId from ecs/Entity.h (global namespace)
 
 // =============================================================================
 // Tag Components
@@ -68,6 +33,11 @@ struct ShipState {
   int invincibleFrames = 0;
   bool focused = false;  // Slow mode for precise movement
   int facingX = 1;       // -1 or +1 for sprite direction
+
+  // Movement params (copied from ShipConfig at spawn)
+  float speed = 4.0F;         // Normal movement speed
+  float focusedSpeed = 2.0F;  // Focused/slow movement speed
+  bool instantMovement = true;
 };
 
 // =============================================================================
@@ -93,13 +63,31 @@ struct WeaponState {
 // Satellite/Option State (Super EDF style)
 // =============================================================================
 
+// Forward declare for PositionMode enum
+struct SatelliteConfig;
+
 struct SatelliteState {
   std::string configId;
   EntityId owner = kInvalidEntity;
   int slotIndex = 0;
   float orbitAngle = 0.0F;  // Current angle for orbit mode (radians)
-  float offsetX = 0.0F;     // Current computed offset from owner
-  float offsetY = 0.0F;
+
+  // Current smoothed offset from owner
+  float currentOffsetX = 0.0F;
+  float currentOffsetY = 0.0F;
+
+  // Position mode (copied from config)
+  enum class PositionMode : std::uint8_t { Fixed, Orbit, Formation };
+  PositionMode positionMode = PositionMode::Fixed;
+
+  // Position config (copied from SatelliteConfig at spawn)
+  float fixedOffsetX = 20.0F;
+  float fixedOffsetY = 0.0F;
+  float orbitRadius = 30.0F;
+  float orbitSpeed = 0.05F;
+  float focusedRadius = 15.0F;
+  float focusedOffsetX = 10.0F;
+  float focusedOffsetY = 0.0F;
 };
 
 // =============================================================================
@@ -113,6 +101,7 @@ struct ShmupProjectileState {
   int pierceRemaining = 1;  // -1 = infinite (laser)
   bool fromPlayer = true;
   EntityId owner = kInvalidEntity;
+  float gravity = 0.0F;  // Per-frame gravity acceleration
 };
 
 struct HomingState {
@@ -134,7 +123,7 @@ struct LaserBeamState {
 // Enemy State
 // =============================================================================
 
-struct EnemyState {
+struct ShmupEnemyState {
   std::string typeId;
   int health = 1;
   int maxHealth = 1;
