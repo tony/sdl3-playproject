@@ -1,0 +1,10 @@
+version = 1
+
+# Descend the steep slope segment to stress snap/fall-through behavior.
+[[keyframes]]
+frame = 0
+left = true
+
+[[keyframes]]
+frame = 30
+left = false

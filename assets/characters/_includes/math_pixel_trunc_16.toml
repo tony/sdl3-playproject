@@ -1,0 +1,4 @@
+[math]
+subpixel = 16
+collision_snap = "pixel"
+quantize = "trunc"

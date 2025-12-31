@@ -1,0 +1,57 @@
+version = 1
+include = [
+  "_includes/form_anchor_knuckles.toml",
+  "_includes/render_gale_pixellab.toml",
+  "_includes/physics_knuckles.toml",
+  "_includes/move_knuckles.toml",
+  "_includes/math_pixel_trunc_256.toml",
+  "_includes/jump_knuckles_impulse_4.toml",
+  "_includes/actions_glide_knuckles.toml",
+  "_includes/actions_wall_knuckles.toml",
+  "_includes/actions_spindash_sonic.toml",
+]
+
+[name]
+id = "gale"
+display = "Gale"
+
+[form]
+id = "puppet"
+palette_base = "5BC0EB"
+palette_accent = "FDE74C"
+variants = ["knuckles", "gale"]
+
+[form.colors]
+chest = "F9F9F9"
+glove = "F9F9F9"
+hair = "5BC0EB"
+shoe = "3A86FF"
+spike = "FDE74C"
+scarf = "FDE74C"
+weapon = "FDE74C"
+
+[actions.fly]
+enabled = false
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[[actions.attacks]]
+id = "gust_swipe"
+enabled = true
+input = "action2"
+type = "press"
+allow_air = false
+startup_frames = 3
+active_frames = 7
+cooldown_frames = 16
+damage = 1.0
+knockback_vx = 1.6
+knockback_vy = -2.4
+hitbox_w = 20.0
+hitbox_h = 12.0
+offset_x = 20.0
+offset_y = -4.0

@@ -1,0 +1,38 @@
+version = 1
+include = [
+  "../../characters/_includes/form_anchor_knuckles.toml",
+  "../../characters/_includes/render_knuckles_placeholder.toml",
+  "../../characters/_includes/physics_knuckles.toml",
+  "../../characters/_includes/move_knuckles.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_knuckles_impulse_4.toml",
+  "../../characters/_includes/actions_glide_knuckles.toml",
+  "../../characters/_includes/actions_wall_knuckles.toml",
+  "../../characters/_includes/actions_spindash_sonic.toml",
+]
+
+[name]
+id = "knuckles"
+display = "Knuckles"
+
+[form]
+id = "puppet"
+palette_base = "E03030"
+palette_accent = "FFD700"
+variants = ["knuckles"]
+
+[form.colors]
+chest = "FFFFFF"
+glove = "FFFFFF"
+hair = "E03030"
+shoe = "E03030"
+spike = "FFFFFF"
+
+[actions.fly]
+enabled = false
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false

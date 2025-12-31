@@ -1,0 +1,7 @@
+[form.anchor_deltas]
+head = [0, -2]
+body = [0, -1]
+hand_front = [0, -1]
+hand_back = [0, -1]
+foot_front = [1, 0]
+foot_back = [-1, 0]

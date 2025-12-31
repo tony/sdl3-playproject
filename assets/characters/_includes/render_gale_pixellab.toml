@@ -1,0 +1,38 @@
+# Gale character sprite render config (PixelLab generated)
+
+[render]
+icon = "assets/sprites/pixellab/icons/gale_icon.png"
+frame_w = 64
+frame_h = 64
+scale = 2.0
+offset_x = 0.0
+offset_y = 38.0
+
+[render.sheets]
+east = "assets/sprites/pixellab/sheets/gale_east.png"
+west = "assets/sprites/pixellab/sheets/gale_west.png"
+
+[render.anims.idle]
+row = 0
+frames = 4
+fps = 8.0
+
+[render.anims.run]
+row = 1
+frames = 6
+fps = 12.0
+
+[render.anims.jump]
+row = 2
+frames = 7
+fps = 14.0
+
+[render.anims.special]
+row = 3
+frames = 4
+fps = 12.0
+
+[render.anims.attack]
+row = 4
+frames = 6
+fps = 12.0

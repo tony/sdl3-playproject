@@ -1,0 +1,63 @@
+version = 1
+include = [
+  "../../characters/_includes/form_anchor_head_minus2_arms_minus1.toml",
+  "../../characters/_includes/render_mario_placeholder.toml",
+]
+
+[name]
+id = "simon"
+display = "Simon (Castlevania)"
+
+[form]
+id = "puppet"
+palette_base = "8B4513"
+palette_accent = "CD853F"
+variants = ["simon"]
+
+[form.colors]
+skin = "FFE4C4"
+headband = "E03030"
+weapon = "CD853F"
+glove = "8B4513"
+shoe = "8B4513"
+
+[physics]
+gravity = 0.180556
+max_fall_speed = 18.33
+ground_friction = 20.0
+air_drag = 0.0
+
+[move]
+model = "instant"
+air_control = false
+max_speed_ground = 0.5
+max_speed_air = 0.5
+turn_resistance = 0.0
+
+[math]
+subpixel = 0
+collision_snap = "pixel"
+
+[jump]
+enabled = true
+model = "fixed"
+impulse = 4
+coyote_frames = 0
+jump_buffer_frames = 0
+variable_jump = false
+fall_gravity_multiplier = 1.0
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.spindash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.fly]
+enabled = false

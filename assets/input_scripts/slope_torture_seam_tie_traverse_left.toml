@@ -1,0 +1,10 @@
+version = 1
+
+# Traverse the solid->slope seam from right to left (tie-breaking + slope contact).
+[[keyframes]]
+frame = 0
+left = true
+
+[[keyframes]]
+frame = 20
+left = false

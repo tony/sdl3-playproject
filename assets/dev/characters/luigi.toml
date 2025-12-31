@@ -1,0 +1,66 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/form_anchor_head_minus2_arms_minus1.toml",
+  "../../characters/_includes/render_mario_placeholder.toml",
+  "../../characters/_includes/math_pixel_trunc_16.toml",
+]
+
+[name]
+id = "luigi"
+display = "Luigi"
+
+[form]
+id = "puppet"
+palette_base = "00A651"
+palette_accent = "0055A4"
+variants = ["luigi"]
+
+[form.colors]
+skin = "FFCC99"
+hat = "00A651"
+overalls = "0055A4"
+emblem = "FFFFFF"
+moustache = "1A1A1A"
+button = "FFD700"
+
+[physics]
+gravity = 0.145833
+max_fall_speed = 15.83
+ground_friction = 3.0
+air_drag = 1.0
+
+[move]
+accel_ground = 0.118056
+accel_air = 0.069444
+decel_ground = 0.138889
+max_speed_ground = 2.17
+max_speed_air = 2
+turn_resistance = 0.08
+
+[jump]
+enabled = true
+model = "dual_gravity"
+impulse = 3.83
+coyote_frames = 10
+jump_buffer_frames = 14
+variable_jump = true
+variable_cut_multiplier = 0.35
+fall_gravity_multiplier = 1.20
+rise_gravity_multiplier_held = 0.85
+rise_gravity_multiplier_released = 1.40
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = false

@@ -1,0 +1,8 @@
+[form.anchor_deltas]
+head = [0, 6]
+body = [0, 6]
+eye_l = [0, 4]
+eye_r = [0, 4]
+mouth = [0, 4]
+foot_front = [0, 2]
+foot_back = [0, 2]

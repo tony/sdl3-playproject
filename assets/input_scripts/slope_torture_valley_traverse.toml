@@ -1,0 +1,10 @@
+version = 1
+
+# Cross the up_left <-> up_right valley seam (should stay on slope, not drop to the floor).
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 40
+right = false

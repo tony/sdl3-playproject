@@ -1,0 +1,9 @@
+version = 1
+
+[[keyframes]]
+frame = 1
+right = true
+
+[[keyframes]]
+frame = 31
+right = false

@@ -1,0 +1,60 @@
+version = 1
+include = [
+  "../../characters/_includes/form_anchor_head_minus2_arms_minus1.toml",
+  "../../characters/_includes/render_megamanx_placeholder.toml",
+  "../../characters/_includes/render_anims_dash_rotate_45.toml",
+  "../../characters/_includes/physics_megaman_instant.toml",
+  "../../characters/_includes/move_megaman_instant.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_megaman_impulse_2_33.toml",
+]
+
+[name]
+id = "zero_airdash"
+display = "Zero (Air Dash)"
+
+[form]
+id = "puppet"
+palette_base = "E03030"
+palette_accent = "FFD700"
+variants = ["zero"]
+
+[form.colors]
+skin = "FFCC99"
+glove = "F0F0F0"
+shoe = "E03030"
+hair = "FFD700"
+gem = "00CED1"
+weapon = "FFD700"
+
+[actions.dash]
+enabled = true
+type = "press"
+cooldown_frames = 0
+dash_speed = 2
+dash_time_frames = 24
+allow_air = true
+air_dashes = 1
+
+[actions.wall]
+enabled = true
+probe = 1.0
+slide_gravity_multiplier = 0.35
+slide_max_fall_speed = 1.67
+jump_impulse = 2.33
+jump_vx = 1.58
+detach_frames = 18
+dash_kick_enabled = true
+dash_kick_speed = 2        # same as Zero's dash_speed
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = false

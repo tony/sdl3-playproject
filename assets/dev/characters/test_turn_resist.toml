@@ -1,0 +1,42 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_charcoal.toml",
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/physics_sonic.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_sonic_impulse_4.toml",
+]
+
+[name]
+id = "test_turn_resist"
+display = "Turn Resistance Zone"
+
+[form]
+id = "puppet"
+
+[move]
+model = "approach"
+air_control = true
+accel_ground = 0.166667
+accel_air = 0.097222
+decel_ground = 0.194444
+max_speed_ground = 3.0
+max_speed_air = 2.83
+turn_resistance = 0.9
+turn_resistance_air = 0.9
+
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = false

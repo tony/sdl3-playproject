@@ -1,0 +1,56 @@
+version = 1
+include = [
+  "_includes/form_anchor_kirby.toml",
+  "_includes/render_nimbus_pixellab.toml",
+  "_includes/physics_kirby.toml",
+  "_includes/move_kirby.toml",
+  "_includes/math_pixel_trunc_256.toml",
+  "_includes/jump_kirby_impulse_3_5.toml",
+  "_includes/actions_fly_kirby.toml",
+]
+
+[name]
+id = "nimbus"
+display = "Nimbus"
+
+[form]
+id = "puppet"
+palette_base = "CDB4DB"
+palette_accent = "FFAFCC"
+variants = ["kirby", "nimbus"]
+
+[form.colors]
+cheek = "FF8FAB"
+glove = "CDB4DB"
+shoe = "B5179E"
+halo = "FFD166"
+weapon = "FFD166"
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.spindash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[[actions.attacks]]
+id = "puff_pop"
+enabled = true
+input = "action1"
+type = "press"
+allow_air = true
+startup_frames = 2
+active_frames = 6
+cooldown_frames = 12
+damage = 1.0
+knockback_vx = 1.5
+knockback_vy = -2.4
+hitbox_w = 18.0
+hitbox_h = 12.0
+offset_x = 18.0
+offset_y = -4.0

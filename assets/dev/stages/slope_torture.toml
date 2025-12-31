@@ -1,0 +1,209 @@
+version = 1
+
+[stage]
+id = "slope_torture"
+display = "Slope Torture"
+
+[world]
+width = 3200.0
+height = 800.0
+
+[render]
+bg_top = "081018"
+bg_bottom = "132A3F"
+platform_base = "3E3A4A"
+platform_light = "5A5668"
+platform_dark = "242230"
+platform_highlight = "78748A"
+
+[[solids]]
+x = 0.0
+y = 700.0
+w = 3200.0
+h = 100.0
+
+# Flat -> slope -> flat seams (left side)
+[[slopes]]
+x = 200.0
+y = 560.0
+w = 200.0
+h = 140.0
+dir = "up_right"
+
+[[solids]]
+x = 400.0
+y = 560.0
+w = 200.0
+h = 40.0
+
+# A small mid-height platform to approach the slope edge from the right.
+[[solids]]
+x = 440.0
+y = 632.0
+w = 120.0
+h = 20.0
+
+# One-way -> slope -> one-way seam (upper lane)
+[[solids]]
+x = 860.0
+y = 420.0
+w = 200.0
+h = 20.0
+one_way = true
+
+[[slopes]]
+x = 1060.0
+y = 340.0
+w = 200.0
+h = 80.0
+dir = "up_right"
+
+[[solids]]
+x = 1260.0
+y = 340.0
+w = 200.0
+h = 20.0
+one_way = true
+
+[[slopes]]
+x = 600.0
+y = 560.0
+w = 200.0
+h = 140.0
+dir = "up_left"
+
+# Peak (up_right meets up_left)
+[[slopes]]
+x = 1000.0
+y = 560.0
+w = 200.0
+h = 140.0
+dir = "up_right"
+
+[[slopes]]
+x = 1200.0
+y = 560.0
+w = 200.0
+h = 140.0
+dir = "up_left"
+
+# Valley (up_left meets up_right)
+[[slopes]]
+x = 1600.0
+y = 520.0
+w = 200.0
+h = 140.0
+dir = "up_left"
+
+[[slopes]]
+x = 1800.0
+y = 520.0
+w = 200.0
+h = 140.0
+dir = "up_right"
+
+# Steep slope (stress horizontal-speed snap behavior)
+[[slopes]]
+x = 2200.0
+y = 500.0
+w = 80.0
+h = 200.0
+dir = "up_right"
+
+[[solids]]
+x = 2280.0
+y = 500.0
+w = 120.0
+h = 40.0
+
+# Step-up slope: bottom is slightly above the floor (tests flat->slope step-up behavior).
+[[slopes]]
+x = 2400.0
+y = 556.0
+w = 120.0
+h = 140.0
+dir = "up_right"
+
+# Sub-pixel seam: slight overlap at slope->flat transition (far right)
+[[slopes]]
+x = 2600.0
+y = 560.0
+w = 200.0
+h = 140.0
+dir = "up_right"
+
+[[solids]]
+x = 2799.75
+y = 560.0
+w = 200.0
+h = 40.0
+
+[spawns.default]
+x = 120.0
+y = 600.0
+
+[spawns.slope_start]
+x = 160.0
+y = 668.0
+
+[spawns.right_edge]
+x = 480.0
+y = 600.0
+facing = -1
+
+# Slope->solid seam at equal height (tests tie-breaking: prefer solid when effectively equal).
+[spawns.seam_tie]
+x = 400.0
+y = 528.0
+
+[spawns.peak]
+x = 1180.0
+y = 528.0
+
+[spawns.valley]
+x = 1760.0
+y = 600.0
+
+[spawns.steep_slope_top]
+x = 2320.0
+y = 468.0
+facing = -1
+
+[spawns.step_up_slope]
+x = 2380.0
+y = 668.0
+
+[spawns.one_way_seam]
+x = 920.0
+y = 380.0
+
+[spawns.one_way_seam_right]
+x = 1340.0
+y = 308.0
+facing = -1
+
+[spawns.subpixel_seam]
+x = 2720.0
+y = 520.0
+
+[spawns.subpixel_seam_right]
+x = 2880.0
+y = 528.0
+facing = -1
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 3200.0
+h = 740.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

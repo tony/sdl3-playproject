@@ -1,0 +1,47 @@
+version = 1
+
+[stage]
+id = "hazards_ignore_iframes_torture"
+display = "Hazards Ignore iFrames Torture"
+
+[world]
+width = 600.0
+height = 600.0
+
+[[solids]]
+x = 0.0
+y = 500.0
+w = 600.0
+h = 80.0
+
+[spawns.default]
+x = 460.0
+y = 468.0
+facing = 1
+
+[[hazards]]
+x = 400.0
+y = 0.0
+w = 200.0
+h = 600.0
+ignore_iframes = true
+iframes_ms = 5000
+knockback_vx = 0.0
+knockback_vy = 0.0
+
+[camera]
+deadzone_w = 0.0
+deadzone_h = 0.0
+lookahead_x = 0.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 600.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

@@ -1,0 +1,9 @@
+[move]
+model = "approach"
+air_control = true
+accel_ground = 0.125
+accel_air = 0.076389
+decel_ground = 0.152778
+max_speed_ground = 2.17
+max_speed_air = 2
+turn_resistance = 0.10

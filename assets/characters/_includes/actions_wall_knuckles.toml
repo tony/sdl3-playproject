@@ -1,0 +1,10 @@
+[actions.wall]
+enabled = true
+probe = 1.0
+slide_gravity_multiplier = 0.25
+slide_max_fall_speed = 1.50
+climb_speed = 1.33
+descend_speed = 1.33
+jump_impulse = 4
+jump_vx = 1.67
+detach_frames = 18

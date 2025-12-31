@@ -1,4 +1,4 @@
-# Default variables (override: `just build compiler=gcc`, `just run args="--frames 120"`)
+# Default variables (override: `just build compiler=gcc`, `just run args="--no-ui"`)
 compiler := "clang"
 type := "Debug"
 build_dir := "build"
@@ -49,10 +49,25 @@ run *args: build
 smoke: build
     ./{{build_dir}}/{{exe}} --frames 120 --video-driver offscreen
 
+# Run 120-frame smoke test without rendering
+[group: 'run']
+smoke-headless: build
+    ./{{build_dir}}/{{exe}} --frames 120 --no-render
+
 # Run CTest test suite
 [group: 'test']
 test: build
     ctest --test-dir {{build_dir}} --output-on-failure
+
+# Validate asset configurations
+[group: 'test']
+validate: build
+    ./{{build_dir}}/{{exe}} --validate
+
+# Validate asset configurations (strict mode)
+[group: 'test']
+validate-strict: build
+    ./{{build_dir}}/{{exe}} --validate --strict
 
 # Run all linters (cppcheck + cpplint + iwyu)
 [group: 'lint']
@@ -83,12 +98,17 @@ tidy: configure
 format: configure
     cmake --build {{build_dir}} --target format
 
-# Quick verification (format + lint + test)
+# Quick verification (format + lint + test + validate)
 [group: 'check']
-check: format lint test
+check: format lint test validate-strict
     @echo "✅ checks passed"
+
+# LLM-friendly verification (same as check)
+[group: 'check']
+check-llm: check
+    @echo "✅ check-llm passed"
 
 # Full verification including clang-tidy
 [group: 'check']
-check-full: format lint tidy test
+check-full: format lint tidy test validate-strict
     @echo "✅ full checks passed"

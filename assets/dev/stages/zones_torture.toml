@@ -1,0 +1,84 @@
+version = 1
+
+[stage]
+id = "zones_torture"
+display = "Zones Torture"
+
+[world]
+width = 2800.0
+height = 600.0
+
+[render]
+bg_top = "0C0C10"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+# Flat floor across the stage.
+[[solids]]
+x = 0.0
+y = 500.0
+w = 2800.0
+h = 80.0
+
+[spawns.default]
+x = 120.0
+y = 468.0
+facing = 1
+
+[spawns.water]
+x = 920.0
+y = 468.0
+facing = 1
+
+[spawns.ice]
+x = 1920.0
+y = 468.0
+facing = 1
+
+# Water: slowed movement + reduced speed cap.
+[[zones]]
+x = 800.0
+y = 0.0
+w = 800.0
+h = 600.0
+type = "water"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 0.5
+max_speed_multiplier = 0.5
+friction_multiplier = 1.0
+jump_impulse_multiplier = 1.0
+
+# Ice: low ground friction.
+[[zones]]
+x = 1800.0
+y = 0.0
+w = 800.0
+h = 600.0
+type = "ice"
+gravity_multiplier = 1.0
+max_fall_speed_multiplier = 1.0
+accel_multiplier = 1.0
+max_speed_multiplier = 1.0
+friction_multiplier = 0.10
+jump_impulse_multiplier = 1.0
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 2800.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

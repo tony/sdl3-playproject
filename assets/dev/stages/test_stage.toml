@@ -1,0 +1,86 @@
+version = 1
+
+[stage]
+id = "test_stage"
+display = "Test Stage"
+
+[world]
+width = 2000.0
+height = 600.0
+
+[render]
+bg_top = "0C0C10"
+bg_bottom = "1A1A28"
+platform_base = "4A4A52"
+platform_light = "6A6A74"
+platform_dark = "2A2A32"
+platform_highlight = "8A8A94"
+
+[[solids]]
+x = 0.0
+y = 500.0
+w = 560.0
+h = 80.0
+
+[[solids]]
+x = 680.0
+y = 500.0
+w = 1320.0
+h = 80.0
+
+[[slopes]]
+x = 560.0
+y = 440.0
+w = 120.0
+h = 60.0
+dir = "up_right"
+
+[[solids]]
+x = 260.0
+y = 340.0
+w = 220.0
+h = 20.0
+one_way = true
+
+[[solids]]
+x = 420.0
+y = 420.0
+w = 120.0
+h = 24.0
+
+[[solids]]
+x = 740.0
+y = 360.0
+w = 30.0
+h = 220.0
+
+[spawns.default]
+x = 120.0
+y = 120.0
+
+[spawns.left]
+x = 60.0
+y = 120.0
+facing = 1
+
+[spawns.right]
+x = 1900.0
+y = 120.0
+facing = -1
+
+[camera]
+deadzone_w = 240.0
+deadzone_h = 140.0
+lookahead_x = 120.0
+lookahead_y = 0.0
+
+[camera.bounds]
+x = 0.0
+y = 0.0
+w = 2000.0
+h = 540.0
+
+[collision]
+ground_snap = 2.0
+step_up = 6.0
+skin = 0.01

@@ -1,3 +1,12 @@
 [
-  { include: [ "<bits/chrono.h>", "private", "<chrono>", "public" ] }
+  { include: [ "<bits/chrono.h>", "private", "<chrono>", "public" ] },
+  { include: [ "<toml++/impl/array.hpp>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/key.hpp>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/node.hpp>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/node_view.hpp>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/parser.inl>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/std_optional.hpp>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/table.hpp>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/table.inl>", "private", "<toml++/toml.h>", "public" ] },
+  { include: [ "<toml++/impl/value.hpp>", "private", "<toml++/toml.h>", "public" ] }
 ]

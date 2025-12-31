@@ -1,0 +1,65 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_sonic.toml",
+  "../../characters/_includes/form_anchor_sonic.toml",
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/render_anims_dash_rotate_45.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/states_rolling_sonic.toml",
+]
+
+[name]
+id = "test_spindash_window"
+display = "Test Spindash Window"
+
+[form]
+id = "puppet"
+palette_base = "1870DC"
+palette_accent = "D4A017"
+variants = ["sonic"]
+
+[physics]
+gravity = 0.075
+max_fall_speed = 10
+ground_friction = 12.0
+air_drag = 2.0
+
+[move]
+model = "approach"
+air_control = true
+accel_ground = 0.30
+accel_air = 0.18
+decel_ground = 0.40
+max_speed_ground = 1.0
+max_speed_air = 0.9
+turn_resistance = 0.2
+turn_resistance_air = 0.2
+
+[jump]
+enabled = true
+impulse = 3.0
+coyote_frames = 10
+jump_buffer_frames = 11
+variable_jump = true
+variable_cut_multiplier = 0.45
+fall_gravity_multiplier = 1.0
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = true
+type = "hold"
+input = "jump"
+require_down = true
+down_window_frames = 3
+charge_frames = 20
+min_launch_speed = 4.0
+max_launch_speed = 4.0
+tap_boost_frames = 0

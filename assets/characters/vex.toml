@@ -1,0 +1,57 @@
+version = 1
+include = [
+  "_includes/form_anchor_ninja.toml",
+  "_includes/render_vex_pixellab.toml",
+  "_includes/physics_ninja.toml",
+  "_includes/move_ninja.toml",
+  "_includes/math_pixel_trunc_256.toml",
+  "_includes/jump_ninja_impulse_3_83.toml",
+  "_includes/actions_dash_ninja.toml",
+]
+
+[name]
+id = "vex"
+display = "Vex"
+
+[form]
+id = "puppet"
+palette_base = "2B2D42"
+palette_accent = "EF233C"
+variants = ["ninja", "vex"]
+
+[form.colors]
+mask = "2B2D42"
+headband = "EF233C"
+weapon = "E5E5E5"
+glove = "2B2D42"
+shoe = "2B2D42"
+eye_slit = "E5E5E5"
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[actions.spindash]
+enabled = false
+
+[[actions.attacks]]
+id = "shadow_cut"
+enabled = true
+input = "action2"
+type = "press"
+allow_air = true
+startup_frames = 1
+active_frames = 5
+cooldown_frames = 10
+damage = 1.0
+knockback_vx = 2.0
+knockback_vy = -2.4
+hitbox_w = 16.0
+hitbox_h = 10.0
+offset_x = 20.0
+offset_y = -4.0

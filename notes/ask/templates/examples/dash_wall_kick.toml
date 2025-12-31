@@ -1,0 +1,323 @@
+# Dash Wall Kick (MMX2/MMX3 Style)
+# Frame-accurate specification using mechanic_spec_schema.toml
+#
+# Source: Expert analysis of MMX2/MMX3 wall dash jump mechanics
+# Reference: TAS recordings, disassembly notes
+
+# ============================================================================
+# ENGINE CONTRACT
+# ============================================================================
+
+[engine]
+tick_rate_hz = 60
+fixed_timestep = true
+sim_step_when_slow = "drop_frames"
+input_sampling = "once_per_sim_tick"
+
+[engine.numeric]
+position_format = "int_subpixel"
+position_scale = 256
+velocity_format = "int_subpixel"
+velocity_scale = 256
+rounding_mode = "trunc_toward_zero"
+
+[engine.direction]
+socd_resolution = "neutral"
+
+# ============================================================================
+# MECHANIC IDENTITY
+# ============================================================================
+
+[mechanic]
+name = "Dash Wall Kick"
+source_games = ["MMX2", "MMX3"]
+characters = ["X", "Zero"]
+category = "Movement"
+complexity = "Intermediate"
+
+# ============================================================================
+# STATE/SIGNAL DICTIONARY
+# ============================================================================
+
+[[signals]]
+name = "wall_sliding"
+definition = "Character is in wall slide state (touching wall + airborne + falling)"
+probe = "wall_probe"
+
+[[signals]]
+name = "wall_contact"
+definition = "wall_probe overlaps solid within probe distance"
+probe = "wall_probe"
+
+[[signals]]
+name = "dashing"
+definition = "Dash button is currently held (not just pressed this frame)"
+
+[[probes]]
+name = "wall_probe"
+position = "side-center"  # left or right depending on facing
+width = 1
+height = 8
+purpose = "wall detection for slide/kick"
+
+# ============================================================================
+# INPUT MODEL
+# ============================================================================
+
+[input]
+# The jump press defines Frame 0 for this mechanic
+anchor_event = "Press(Jump)"
+simultaneous_tolerance = 0  # No buffering - exact frame only
+pre_buffer_frames = 0  # No pre-buffering of jump input
+post_grace_frames = 0  # No coyote time for wall contact
+
+# Key insight: X2/X3 checks HELD state, not press events
+# This makes it lenient: hold dash while approaching wall, keep holding, press jump
+[input.motion_parser]
+enabled = false
+
+[input.charge_move]
+enabled = false
+
+# ============================================================================
+# ACTIVATION
+# ============================================================================
+
+[activation]
+# Evaluated after collision so we know wall contact status
+trigger_eval_hook = "PostCollision"
+
+# Boolean equation: wall_sliding AND Press(Jump) AND Down(Dash)
+# Note: Down(Dash) = held state, not Press(Dash) = just pressed
+trigger_conditions = [
+  "wall_sliding",      # Must be in wall slide state
+  "Press(Jump)",       # Jump button rising edge this frame
+  "Down(Dash)",        # Dash button currently held (OR just pressed)
+]
+
+[activation.captured]
+wall_side = true   # Which wall we're kicking off (left/right)
+facing = true      # Current facing direction
+
+[activation.arbitration]
+priority_group = "Movement"
+priority_value = 10  # Higher than normal wall kick (priority 5)
+consumes_inputs = ["Press(Jump)"]
+conflicts_with = ["WallKick"]  # If dash kick triggers, normal kick doesn't
+fallback_if_blocked = "ConvertToOther"  # Fall back to normal wall kick
+
+# ============================================================================
+# EXECUTION
+# ============================================================================
+
+[execution]
+model_type = "Parametric"
+
+[execution.parametric]
+# On-enter: set velocities immediately
+# X velocity: 3.5 px/frame away from wall (captured wall_side determines sign)
+on_enter_vx = { op = "set", value = 3.5 }  # Sign applied based on wall_side
+# Y velocity: standard jump impulse
+on_enter_vy = { op = "set", value = -5.0 }  # Negative = upward
+
+# No per-frame modifications during the kick itself
+per_frame_vx = { op = "add", value = 0.0 }
+per_frame_vy = { op = "add", value = 0.0 }
+
+gravity_scale = 1.0  # Normal gravity applies immediately
+control_authority = 1.0  # Full air control after kick
+max_speed_x = 3.5  # Can't exceed kick speed
+max_speed_y = 10.0  # Terminal velocity
+
+[execution.phases]
+startup_frames = 0  # Instant
+active_frames = 1   # Just the velocity set
+recovery_frames = 0 # Immediately transitions to airborne
+
+[execution.collision]
+hitbox_model = "AABB_feet"
+axis_resolve_order = "YThenX"
+
+# ============================================================================
+# TERMINATION
+# ============================================================================
+
+[[termination.natural]]
+condition = "touches_ground"
+transition_to = "Idle"
+
+[[termination.natural]]
+condition = "touches_wall"
+transition_to = "WallSlide"
+
+# Cancel windows
+[[termination.cancels]]
+source = "dash"
+window_start = 0
+window_end = -1
+preserves_velocity = "partial"  # Can air dash, preserves some momentum
+
+[[termination.cancels]]
+source = "attack"
+window_start = 0
+window_end = -1
+preserves_velocity = "full"
+
+[[termination.cancels]]
+source = "damage"
+window_start = 0
+window_end = -1
+preserves_velocity = "none"
+
+[termination.lockouts]
+wall_regrab_frames = 9  # ~150ms at 60fps, prevents immediate re-grab
+
+# ============================================================================
+# MOMENTUM & INHERITANCE
+# ============================================================================
+
+[momentum]
+# Velocity persists until ground, wall, or new action
+vx_out_formula = "vx"  # Keep horizontal momentum
+vy_out_formula = "vy"  # Keep vertical momentum
+when_inherited = "OnExit"
+velocity_persists_until = "ground_contact"
+
+# ============================================================================
+# EDGE CASES
+# ============================================================================
+
+[edge_cases]
+input_early_buffer_frames = 0  # No jump buffering
+input_late_grace_frames = 0    # No coyote time
+wall_coyote_frames = 0         # Must be touching wall on exact frame
+regrab_lock_frames = 9         # Prevent wall grab for ~150ms after kick
+
+# Corner case: touching both walls simultaneously
+ground_and_wall_same_frame = "wall_kick_takes_priority"
+wall_and_ceiling_same_frame = "ceiling_stops_upward_velocity"
+
+[[edge_cases.hooks]]
+hook = "PostCollision"
+state = "WallSlide"
+condition = "touched_ground_this_frame"
+action = "transition_to_grounded_before_kick_check"
+
+# ============================================================================
+# VERIFICATION ARTIFACTS
+# ============================================================================
+
+[[verification.sources]]
+type = "disassembly"
+reference = "MMX2 ROM analysis"
+capture_conditions = "X wall sliding, holding dash, presses jump"
+
+[[verification.sources]]
+type = "video"
+reference = "TAS wall climb optimization footage"
+capture_conditions = "19-20 frame optimal cycle for repeated wall kicks"
+
+# Golden trace: dash wall kick from left wall
+[[verification.golden_trace]]
+frame = -2
+state = "WallSlide"
+pos_x = 8.0
+pos_y = 100.0
+vel_x = 0.0
+vel_y = 1.5
+flags = ["wall_contact_left", "dash_held"]
+notes = "Sliding down left wall, holding dash"
+
+[[verification.golden_trace]]
+frame = -1
+state = "WallSlide"
+pos_x = 8.0
+pos_y = 101.5
+vel_x = 0.0
+vel_y = 1.5
+flags = ["wall_contact_left", "dash_held"]
+notes = "Still sliding, still holding dash"
+
+[[verification.golden_trace]]
+frame = 0
+state = "DashWallKick"
+pos_x = 8.0
+pos_y = 103.0
+vel_x = 3.5
+vel_y = -5.0
+flags = ["jump_pressed", "dash_held"]
+notes = "TRIGGER FRAME: Jump pressed while dash held"
+
+[[verification.golden_trace]]
+frame = 1
+state = "Airborne"
+pos_x = 11.5
+pos_y = 98.0
+vel_x = 3.5
+vel_y = -4.85
+flags = []
+notes = "Momentum applied, gravity starting"
+
+[[verification.golden_trace]]
+frame = 2
+state = "Airborne"
+pos_x = 15.0
+pos_y = 93.15
+vel_x = 3.5
+vel_y = -4.7
+flags = []
+notes = "Continuing arc"
+
+# Test vectors
+[[verification.test_vectors]]
+name = "basic_dash_wall_kick"
+inputs = [
+  { frame = -10, buttons = ["dash"] },        # Start holding dash
+  { frame = -5, buttons = ["dash", "left"] }, # Approach wall while dashing
+  { frame = 0, buttons = ["dash", "left", "jump"] },  # Press jump while holding dash+left
+]
+expect_trigger_frame = 0
+expect_vx = 3.5
+expect_vy = -5.0
+
+[[verification.test_vectors]]
+name = "dash_pressed_same_frame_as_jump"
+inputs = [
+  { frame = 0, buttons = ["left"] },  # On wall, not dashing
+  { frame = 0, buttons = ["left", "dash", "jump"] },  # Press both same frame
+]
+expect_trigger_frame = 0
+expect_vx = 3.5  # Should trigger because Down(Dash) is true
+expect_vy = -5.0
+
+[[verification.test_vectors]]
+name = "dash_not_held_normal_kick"
+inputs = [
+  { frame = 0, buttons = ["left", "jump"] },  # Jump without dash
+]
+expect_trigger_frame = 0
+expect_vx = 1.5  # Normal wall kick speed, not dash kick
+expect_vy = -5.0
+
+[[verification.test_vectors]]
+name = "dash_released_before_jump"
+inputs = [
+  { frame = -5, buttons = ["dash", "left"] },  # Was dashing
+  { frame = -1, buttons = ["left"] },          # Released dash
+  { frame = 0, buttons = ["left", "jump"] },   # Jump without dash
+]
+expect_trigger_frame = 0
+expect_vx = 1.5  # Normal kick, dash not held on frame 0
+expect_vy = -5.0
+
+# ============================================================================
+# OPEN QUESTIONS
+# ============================================================================
+
+[open_questions]
+items = [
+  "Does MMX2/X3 have any sub-frame input priority? (dash+jump same frame)",
+  "Exact gravity value in original (estimated 0.15 px/frame²)",
+  "Does wall_probe distance vary by character hitbox width?",
+  "Is there a minimum wall slide duration before kick is allowed?",
+]

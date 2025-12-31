@@ -1,0 +1,6 @@
+[actions.fly]
+enabled = true
+type = "hold"
+input = "action2"
+up_accel = 0.138889
+max_up_speed = 2.17

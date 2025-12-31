@@ -1,0 +1,10 @@
+version = 1
+
+# Traverse the one-way -> slope -> one-way transition on the upper lane.
+[[keyframes]]
+frame = 0
+right = true
+
+[[keyframes]]
+frame = 70
+right = false

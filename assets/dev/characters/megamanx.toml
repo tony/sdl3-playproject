@@ -1,0 +1,81 @@
+version = 1
+include = [
+  "../../characters/_includes/form_anchor_ninja.toml",
+  "../../characters/_includes/render_megamanx_placeholder.toml",
+  "../../characters/_includes/render_anims_dash_rotate_45.toml",
+  "../../characters/_includes/move_megaman_instant.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+]
+
+[name]
+id = "megamanx"
+display = "Mega Man X"
+
+[form]
+id = "puppet"
+palette_base = "4A90D9"
+palette_accent = "00CED1"
+variants = ["megamanx"]
+
+[form.colors]
+skin = "FFCC99"
+glove = "4A90D9"
+shoe = "4A90D9"
+gem = "00CED1"
+weapon = "4A90D9"
+helmet = "4A90D9"
+
+[physics]
+gravity = 0.0625
+max_fall_speed = 2.88
+ground_friction = 12.0
+air_drag = 0.0
+
+[move]
+turn_resistance = 0.0
+
+[jump]
+enabled = true
+model = "fixed"
+impulse = 2.50
+coyote_frames = 0
+jump_buffer_frames = 11
+variable_jump = false
+variable_cut_multiplier = 0.40
+fall_gravity_multiplier = 1.25
+
+[actions.dash]
+enabled = true
+type = "press"
+input = "action2"
+cooldown_frames = 0
+dash_speed = 1.75
+dash_time_frames = 29
+allow_air = false
+air_dashes = 0
+allow_jump_override = false
+preserve_momentum = true
+
+
+[actions.wall]
+enabled = true
+probe = 7.0
+require_input = true
+slide_gravity_multiplier = 1.0
+slide_max_fall_speed = 0.5
+climb_speed = 0
+descend_speed = 0
+jump_impulse = 2.50
+jump_vx = 0.75
+detach_frames = 18
+dash_kick_enabled = true
+dash_kick_speed = 1.75        # explicit (same as dash_speed)
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false

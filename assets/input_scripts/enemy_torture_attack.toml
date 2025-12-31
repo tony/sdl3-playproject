@@ -1,0 +1,9 @@
+version = 1
+
+[[keyframes]]
+frame = 0
+action1 = true
+
+[[keyframes]]
+frame = 1
+action1 = false

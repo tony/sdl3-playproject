@@ -1,0 +1,27 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_megamanx_placeholder.toml",
+  "../../characters/_includes/render_anims_dash_rotate_45.toml",
+  "../../characters/_includes/physics_megaman_instant.toml",
+  "../../characters/_includes/move_megaman_instant.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_megaman_impulse_2_33.toml",
+  "../../characters/_includes/actions_dash_megaman_press.toml",
+]
+
+[name]
+id = "test_instant"
+display = "Mega Man X (Instant)"
+
+[form]
+id = "puppet"
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.glide]
+enabled = false

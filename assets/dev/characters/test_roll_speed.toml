@@ -1,0 +1,49 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/physics_sonic.toml",
+  "../../characters/_includes/move_sonic.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_sonic_impulse_4.toml",
+]
+
+[name]
+id = "test_roll_speed"
+display = "Roll Speed Cap"
+
+[form]
+id = "puppet"
+
+[actions.spindash]
+enabled = true
+type = "hold"
+input = "jump"
+require_down = true
+down_window_frames = 0
+charge_frames = 20
+min_launch_speed = 0.5
+max_launch_speed = 0.75
+tap_boost_frames = 0
+
+[actions.spin]
+enabled = false
+
+[actions.fly]
+enabled = false
+
+[actions.dash]
+enabled = false
+
+[actions.glide]
+enabled = false
+
+[states.rolling]
+enabled = true
+auto_start_after_spindash = true
+hitbox_w = 24.0
+hitbox_h = 22.0
+accel_multiplier = 0.5
+max_speed_multiplier = 0.5
+friction_multiplier = 0.5
+stop_speed = 0.0

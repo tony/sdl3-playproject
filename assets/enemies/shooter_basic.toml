@@ -1,0 +1,42 @@
+version = 1
+
+[enemy]
+id = "shooter_basic"
+display = "Shooter"
+type = "shooter"
+
+[collision]
+w = 24
+h = 24
+
+[move]
+speed = 0.0
+gravity = 0.2
+max_fall_speed = 4.0
+turn_on_wall = false
+turn_on_edge = false
+
+[combat]
+health = 2
+contact_damage = 1
+stompable = true
+stomp_bounce_vy = -4.0
+iframes_ms = 250
+knockback_vx = 1.5
+knockback_vy = -2.5
+
+[shooter]
+fire_interval_frames = 90
+warmup_frames = 0
+
+[shooter.projectile]
+speed = 2.2
+gravity = 0.0
+lifetime_frames = 120
+w = 8
+h = 8
+offset_x = 12
+offset_y = -6
+damage = 1
+knockback_vx = 2.0
+knockback_vy = -2.5

@@ -1,0 +1,10 @@
+version = 1
+
+# Press jump shortly before landing to exercise jump buffering.
+[[keyframes]]
+frame = 38
+jump = true
+
+[[keyframes]]
+frame = 39
+jump = false

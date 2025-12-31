@@ -36,7 +36,8 @@ SDL_Surface* loadPngWithStb(const char* path) {
     return nullptr;
   }
 
-  // SDL3 uses SDL_PIXELFORMAT_RGBA32 which matches stb_image's RGBA output.
+  // Create SDL surface from the pixel data
+  // SDL3 uses SDL_PIXELFORMAT_RGBA32 which matches stb_image's RGBA output
   SDL_Surface* surface =
       SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, data, width * 4);
 
@@ -46,7 +47,7 @@ SDL_Surface* loadPngWithStb(const char* path) {
     return nullptr;
   }
 
-  // SDL_CreateSurfaceFrom doesn't copy data, so we need to copy it.
+  // SDL_CreateSurfaceFrom doesn't copy data, so we need to copy it
   SDL_Surface* copied = SDL_DuplicateSurface(surface);
   SDL_DestroySurface(surface);
   stbi_image_free(data);
@@ -90,12 +91,12 @@ SDL_Texture* SpriteCache::loadTexture(const std::string& path) {
   SDL_Surface* surface = nullptr;
 
   if (isPngFile(path)) {
-    // PNG: Load via stb_image, uses alpha channel for transparency.
+    // PNG: Load via stb_image, uses alpha channel for transparency
     surface = loadPngWithStb(path.c_str());
     if (!surface)
       return nullptr;
   } else {
-    // BMP: Load via SDL, uses magenta color key for transparency.
+    // BMP: Load via SDL, uses magenta color key for transparency
     surface = SDL_LoadBMP(path.c_str());
     if (!surface) {
       std::printf("SDL_LoadBMP failed: %s (%s)\n", path.c_str(), SDL_GetError());

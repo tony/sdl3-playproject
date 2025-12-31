@@ -1,0 +1,17 @@
+version = 1
+
+[[keyframes]]
+frame = 0
+jump = true
+
+[[keyframes]]
+frame = 3
+jump = false
+
+[[keyframes]]
+frame = 8
+jump = true
+
+[[keyframes]]
+frame = 45
+jump = false

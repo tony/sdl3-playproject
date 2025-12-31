@@ -1,0 +1,47 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_sonic_placeholder.toml",
+  "../../characters/_includes/physics_sonic.toml",
+  "../../characters/_includes/move_sonic.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_sonic_clamp_vy.toml",
+]
+
+[name]
+id = "puppet"
+display = "Puppet (Procedural)"
+
+[form]
+id = "puppet"
+
+[actions.spin]
+enabled = false
+
+[actions.dash]
+enabled = true
+type = "press"
+input = "action1"
+cooldown_frames = 22
+dash_time_frames = 22
+dash_speed = 6
+allow_air = true
+air_dashes = 1
+
+[actions.fly]
+enabled = true
+type = "hold"
+input = "action2"
+up_accel = 0.194444
+max_up_speed = 2.17
+
+[actions.glide]
+enabled = true
+type = "hold"
+input = "action1"
+start_on_press = true
+gravity_multiplier = 0.28
+max_fall_speed = 4.33
+
+[actions.spindash]
+enabled = false

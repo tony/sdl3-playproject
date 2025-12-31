@@ -1,0 +1,32 @@
+version = 1
+include = [
+  "../../characters/_includes/form_colors_glove_shoe_brown.toml",
+  "../../characters/_includes/render_megamanx_placeholder.toml",
+  "../../characters/_includes/render_anims_dash_rotate_45.toml",
+  "../../characters/_includes/math_pixel_trunc_256.toml",
+  "../../characters/_includes/jump_megaman_impulse_2_33.toml",
+]
+
+[name]
+id = "test_air_turn_resistance"
+display = "Test (Air Turn Resistance)"
+
+[form]
+id = "puppet"
+
+[physics]
+gravity = 0.0625
+max_fall_speed = 5
+ground_friction = 8.0
+air_drag = 0.0
+
+[move]
+model = "approach"
+air_control = true
+accel_ground = 0.180556
+accel_air = 0.083333
+decel_ground = 0.291667
+max_speed_ground = 0.75
+max_speed_air = 0.75
+turn_resistance = 0.08
+turn_resistance_air = 0.9
