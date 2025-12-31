@@ -1,0 +1,8 @@
+# Standard ship physics profile
+# Balanced speed and maneuverability
+
+[physics]
+speed = 4.0              # px/frame normal movement
+focused_speed = 2.0      # px/frame when focused
+accel = 0.5              # px/frame^2 (for smooth movement)
+instant_movement = true  # true = set velocity directly

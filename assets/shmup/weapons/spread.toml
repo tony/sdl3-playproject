@@ -1,0 +1,53 @@
+version = 1
+
+[name]
+id = "spread"
+display = "Spread Gun"
+
+pattern = "spread"
+
+# Level 1: 3-way spread
+[[levels]]
+level = 1
+projectile_count = 3
+spread_angle = 0.52    # 30 degrees
+cooldown_frames = 10
+damage = 0.8
+pierce = 1
+projectile_speed = 8.0
+
+# Level 2: 5-way spread
+[[levels]]
+level = 2
+projectile_count = 5
+spread_angle = 0.87    # 50 degrees
+cooldown_frames = 9
+damage = 1.0
+pierce = 1
+projectile_speed = 8.5
+
+# Level 3: 7-way spread
+[[levels]]
+level = 3
+projectile_count = 7
+spread_angle = 1.22    # 70 degrees
+cooldown_frames = 8
+damage = 1.2
+pierce = 1
+projectile_speed = 9.0
+
+# Level 4 (MAX): 9-way spread
+[[levels]]
+level = 4
+projectile_count = 9
+spread_angle = 1.57    # 90 degrees
+cooldown_frames = 6
+damage = 1.5
+pierce = 2
+projectile_speed = 10.0
+
+[projectile]
+w = 8.0
+h = 8.0
+lifetime_frames = 60
+sprite = "assets/shmup/sprites/projectiles/bullet_spread.png"

@@ -1,0 +1,29 @@
+version = 1
+
+[name]
+id = "standard_option"
+display = "Option Pod"
+
+# Formation mode: tightens with focus
+position_mode = "formation"
+
+[position]
+fixed_offset_x = 24.0
+fixed_offset_y = 8.0
+orbit_radius = 30.0
+orbit_speed = 0.05         # Radians per frame
+focused_radius = 15.0      # Tighter orbit when focused
+focused_offset_x = 12.0    # Tighter position when focused
+focused_offset_y = 4.0
+
+[firing]
+inherit_weapon = true      # Uses owner's equipped weapon
+fire_angle_offset = 0.0    # Fires straight forward
+
+[render]
+sprite = "assets/shmup/sprites/ships/option.png"
+frame_w = 16
+frame_h = 16
+frame_count = 4
+fps = 8.0
+scale = 2.0

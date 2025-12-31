@@ -1,0 +1,52 @@
+version = 1
+
+[name]
+id = "laser"
+display = "Laser Beam"
+
+pattern = "laser"
+
+# Laser levels affect beam width and damage
+[[levels]]
+level = 1
+projectile_count = 1
+cooldown_frames = 0    # Continuous beam
+damage = 0.3           # Per-frame damage
+pierce = -1            # Infinite pierce
+projectile_speed = 0.0 # Not used for laser
+
+[[levels]]
+level = 2
+projectile_count = 1
+cooldown_frames = 0
+damage = 0.5
+pierce = -1
+projectile_speed = 0.0
+
+[[levels]]
+level = 3
+projectile_count = 1
+cooldown_frames = 0
+damage = 0.8
+pierce = -1
+projectile_speed = 0.0
+
+[[levels]]
+level = 4
+projectile_count = 1
+cooldown_frames = 0
+damage = 1.2
+pierce = -1
+projectile_speed = 0.0
+
+[laser]
+width = 6.0
+max_length = 500.0
+extension_rate = 30.0   # px/frame beam growth
+damage_per_frame = 0.5
+
+[projectile]
+w = 6.0
+h = 500.0
+lifetime_frames = 1     # Redrawn each frame
+sprite = "assets/shmup/sprites/projectiles/laser_beam.png"

@@ -1,0 +1,75 @@
+version = 1
+include = ["_includes/physics_standard.toml"]
+
+[name]
+id = "interceptor"
+display = "Interceptor"
+
+# Fast and agile, smaller hitbox
+[physics]
+speed = 5.5
+focused_speed = 2.5
+instant_movement = true
+
+[collision]
+w = 4.0       # Extra tiny hitbox
+h = 4.0
+graze_w = 20.0
+graze_h = 20.0
+
+# Single primary weapon mount
+[[weapon_slots]]
+offset_x = 0.0
+offset_y = -10.0
+default_weapon = "vulcan"
+default_level = 1
+
+# Four satellite slots (swarm style)
+[[satellite_slots]]
+base_offset_x = 20.0
+base_offset_y = -4.0
+orbit_radius = 25.0
+orbit_speed = 0.08
+focused_offset_x = 10.0
+focused_offset_y = -2.0
+default_satellite = "standard_option"
+
+[[satellite_slots]]
+base_offset_x = -20.0
+base_offset_y = -4.0
+orbit_radius = 25.0
+orbit_speed = -0.08
+focused_offset_x = -10.0
+focused_offset_y = -2.0
+default_satellite = "standard_option"
+
+[[satellite_slots]]
+base_offset_x = 16.0
+base_offset_y = 12.0
+orbit_radius = 20.0
+orbit_speed = 0.06
+focused_offset_x = 8.0
+focused_offset_y = 6.0
+default_satellite = "standard_option"
+
+[[satellite_slots]]
+base_offset_x = -16.0
+base_offset_y = 12.0
+orbit_radius = 20.0
+orbit_speed = -0.06
+focused_offset_x = -8.0
+focused_offset_y = 6.0
+default_satellite = "standard_option"
+
+[render]
+frame_w = 40
+frame_h = 40
+scale = 2.0
+
+[render.sheets]
+east = "assets/shmup/sprites/ships/interceptor_east.png"
+
+[render.anims.idle]
+row = 0
+frames = 1
+fps = 0

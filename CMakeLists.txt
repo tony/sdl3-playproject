@@ -45,10 +45,17 @@ FetchContent_MakeAvailable(stb)
 include(cmake/CPM.cmake)
 include(cmake/ThirdParty.cmake)
 
+set(SHMUP_SOURCES
+  src/shmup/config/ShipConfig.cpp
+  src/shmup/config/WeaponConfig.cpp
+  src/shmup/config/SatelliteConfig.cpp
+)
+
 add_executable(sandbox
   src/main.cpp
   src/core/App.cpp
   src/core/SpriteCache.cpp
+  ${SHMUP_SOURCES}
 )
 
 target_include_directories(sandbox PRIVATE src ${stb_SOURCE_DIR})
@@ -73,6 +80,10 @@ endif()
 if(SANDBOX_WITH_ENTT)
   target_link_libraries(sandbox PRIVATE EnTT::EnTT)
   target_compile_definitions(sandbox PRIVATE SANDBOX_HAS_ENTT=1)
+endif()
+if(SANDBOX_WITH_TOMLPP)
+  target_link_libraries(sandbox PRIVATE tomlplusplus::tomlplusplus)
+  target_compile_definitions(sandbox PRIVATE SANDBOX_HAS_TOMLPP=1)
 endif()
 
 target_compile_options(sandbox PRIVATE

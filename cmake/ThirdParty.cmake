@@ -9,6 +9,7 @@ option(SANDBOX_WITH_IMGUI "Enable Dear ImGui (debug UI)" OFF)
 option(SANDBOX_WITH_TRACY "Enable Tracy client (profiling)" OFF)
 option(SANDBOX_WITH_GLM "Enable glm (math types)" OFF)
 option(SANDBOX_WITH_ENTT "Enable EnTT (ECS library reference)" OFF)
+option(SANDBOX_WITH_TOMLPP "Enable toml++ (TOML parsing)" OFF)
 
 set(SANDBOX_FMT_GIT_TAG "11.0.2" CACHE STRING "fmt git tag/commit")
 set(SANDBOX_SPDLOG_GIT_TAG "v1.15.0" CACHE STRING "spdlog git tag/commit")
@@ -17,6 +18,7 @@ set(SANDBOX_IMGUI_GIT_TAG "${SANDBOX_IMGUI_DOCKING_COMMIT}" CACHE STRING "imgui 
 set(SANDBOX_TRACY_GIT_TAG "v0.11.1" CACHE STRING "tracy git tag/commit")
 set(SANDBOX_GLM_GIT_TAG "1.0.1" CACHE STRING "glm git tag/commit")
 set(SANDBOX_ENTT_GIT_TAG "v3.14.0" CACHE STRING "EnTT git tag/commit")
+set(SANDBOX_TOMLPP_GIT_TAG "v3.4.0" CACHE STRING "toml++ git tag/commit")
 
 # ImGui docking branch is recommended when enabled.
 # If the build directory has an old release tag pinned, bump it automatically so
@@ -148,5 +150,20 @@ if(SANDBOX_WITH_TRACY)
       target_compile_definitions(tracy_client PUBLIC TRACY_ENABLE)
       target_link_libraries(tracy_client PUBLIC Threads::Threads)
     endif()
+  endif()
+endif()
+
+# toml++ (header-only)
+if(SANDBOX_WITH_TOMLPP)
+  CPMAddPackage(
+    NAME tomlplusplus
+    GITHUB_REPOSITORY marzer/tomlplusplus
+    GIT_TAG ${SANDBOX_TOMLPP_GIT_TAG}
+    DOWNLOAD_ONLY YES
+  )
+  if(tomlplusplus_ADDED AND NOT TARGET tomlplusplus::tomlplusplus)
+    add_library(tomlplusplus_tomlplusplus INTERFACE)
+    add_library(tomlplusplus::tomlplusplus ALIAS tomlplusplus_tomlplusplus)
+    target_include_directories(tomlplusplus_tomlplusplus INTERFACE "${tomlplusplus_SOURCE_DIR}/include")
   endif()
 endif()

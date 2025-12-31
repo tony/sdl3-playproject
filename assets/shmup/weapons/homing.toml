@@ -1,0 +1,56 @@
+version = 1
+
+[name]
+id = "homing"
+display = "Homing Missiles"
+
+pattern = "homing"
+
+# Level 1: Single slow missile
+[[levels]]
+level = 1
+projectile_count = 1
+spread_angle = 0.0
+cooldown_frames = 20
+damage = 2.0
+pierce = 1
+projectile_speed = 5.0
+
+# Level 2: Twin missiles
+[[levels]]
+level = 2
+projectile_count = 2
+spread_angle = 0.4
+cooldown_frames = 18
+damage = 2.0
+pierce = 1
+projectile_speed = 5.5
+
+# Level 3: Triple missiles
+[[levels]]
+level = 3
+projectile_count = 3
+spread_angle = 0.6
+cooldown_frames = 15
+damage = 2.5
+pierce = 1
+projectile_speed = 6.0
+
+# Level 4 (MAX): Quad missiles
+[[levels]]
+level = 4
+projectile_count = 4
+spread_angle = 0.8
+cooldown_frames = 12
+damage = 3.0
+pierce = 1
+projectile_speed = 7.0
+
+[projectile]
+w = 10.0
+h = 10.0
+lifetime_frames = 180
+sprite = "assets/shmup/sprites/projectiles/missile.png"
+homing_turn_rate = 0.08
+homing_seek_radius = 200.0
+homing_delay_frames = 10

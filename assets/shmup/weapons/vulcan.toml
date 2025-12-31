@@ -1,0 +1,53 @@
+version = 1
+
+[name]
+id = "vulcan"
+display = "Vulcan Cannon"
+
+pattern = "single"
+
+# Level 1: Single shot
+[[levels]]
+level = 1
+projectile_count = 1
+spread_angle = 0.0
+cooldown_frames = 6
+damage = 1.0
+pierce = 1
+projectile_speed = 10.0
+
+# Level 2: Twin shot
+[[levels]]
+level = 2
+projectile_count = 2
+spread_angle = 0.15    # ~8.5 degrees
+cooldown_frames = 5
+damage = 1.0
+pierce = 1
+projectile_speed = 10.0
+
+# Level 3: Triple shot
+[[levels]]
+level = 3
+projectile_count = 3
+spread_angle = 0.3     # ~17 degrees
+cooldown_frames = 4
+damage = 1.5
+pierce = 1
+projectile_speed = 11.0
+
+# Level 4 (MAX): Quintuple shot
+[[levels]]
+level = 4
+projectile_count = 5
+spread_angle = 0.5     # ~28 degrees
+cooldown_frames = 3
+damage = 2.0
+pierce = 2
+projectile_speed = 12.0
+
+[projectile]
+w = 6.0
+h = 12.0
+lifetime_frames = 90
+sprite = "assets/shmup/sprites/projectiles/bullet_vulcan.png"
