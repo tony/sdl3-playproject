@@ -61,3 +61,8 @@ cmake --build build
 ```bash
 ctest --test-dir build --output-on-failure
 ```
+
+## Sprite tools
+
+Sprite helper scripts live in `.tools/` and target the PixelLab asset layout
+used on the `platformer` branch.
