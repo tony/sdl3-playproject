@@ -1,0 +1,64 @@
+version = 1
+
+[level]
+id = "stage1"
+name = "Alien Frontier"
+scroll_speed = 60.0
+duration_seconds = 180.0
+boss_position = 10000.0
+
+[[backgrounds]]
+sprite = "assets/shmup/sprites/backgrounds/stars.png"
+scroll_speed_ratio = 0.2
+repeat_x = true
+layer = 0
+
+[[waves]]
+id = "wave_001"
+enemy_type = "scout"
+formation = "line"
+count = 5
+trigger_position = 200.0
+spawn_x = 1320.0
+spawn_y = 200.0
+spacing = 48.0
+
+[[waves]]
+id = "wave_002"
+enemy_type = "scout"
+formation = "line"
+count = 5
+trigger_position = 400.0
+spawn_x = 1320.0
+spawn_y = 520.0
+spacing = 48.0
+
+[[waves]]
+id = "wave_003"
+enemy_type = "fighter"
+formation = "v_shape"
+count = 5
+trigger_position = 600.0
+spawn_x = 1320.0
+spawn_y = 360.0
+spacing = 60.0
+
+[[waves]]
+id = "wave_004"
+enemy_type = "scout"
+formation = "column"
+count = 8
+trigger_position = 900.0
+spawn_x = 1320.0
+spawn_y = 100.0
+spacing = 64.0
+
+[[waves]]
+id = "wave_005"
+enemy_type = "fighter"
+formation = "line"
+count = 3
+trigger_position = 1200.0
+spawn_x = 1320.0
+spawn_y = 360.0
+spacing = 80.0
