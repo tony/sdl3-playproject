@@ -1,94 +1,26 @@
-# Default variables (override: `just build compiler=gcc`, `just run args="--frames 120"`)
-compiler := "clang"
-type := "Debug"
-build_dir := "build"
-exe := "sandbox"
+# Root justfile: module index + convenience aliases
+import 'vars.just'
+mod build
+mod app
+mod test
+mod lint
+mod format
+mod check
 
 # Aliases for common commands
-alias b := build
+alias b := build::build
 alias r := run
-alias t := test
-alias c := check
+alias t := test::test
+alias c := check::check
 
-# Default recipe (ungrouped - appears first in list)
+# Default recipe (shows modules + recipes)
 default:
-    @just --list
+    @just --list --list-submodules
 
-# Configure CMake build system (uses CMakePresets.json)
-[group: 'build']
-configure:
-    cmake --preset {{ if compiler == "clang" { if type == "Release" { "release-clang" } else { "debug-clang" } } else { if type == "Release" { "release-gcc" } else { "debug-gcc" } } }}
-
-# Configure with Clang (explicit)
-[group: 'build']
-configure-clang:
-    cmake --preset debug-clang
-
-# Configure with GCC (explicit)
-[group: 'build']
-configure-gcc:
-    cmake --preset debug-gcc
-
-# Build the project
-[group: 'build']
-build: configure
-    cmake --build {{build_dir}}
-
-# Remove build artifacts
-[group: 'build']
-clean:
-    rm -rf {{build_dir}}
-
-# Run the application with optional arguments
 [group: 'run']
-run *args: build
-    ./{{build_dir}}/{{exe}} {{args}}
+run *args:
+    just compiler={{compiler}} type={{type}} build_dir={{build_dir}} exe={{exe}} app::run {{args}}
 
-# Run 120-frame smoke test with offscreen rendering
 [group: 'run']
-smoke: build
-    ./{{build_dir}}/{{exe}} --frames 120 --video-driver offscreen
-
-# Run CTest test suite
-[group: 'test']
-test: build
-    ctest --test-dir {{build_dir}} --output-on-failure
-
-# Run all linters (cppcheck + cpplint + iwyu)
-[group: 'lint']
-lint: cppcheck cpplint iwyu
-
-# Run cppcheck static analysis
-[group: 'lint']
-cppcheck: configure
-    cmake --build {{build_dir}} --target cppcheck
-
-# Run cpplint style checker
-[group: 'lint']
-cpplint: configure
-    cmake --build {{build_dir}} --target cpplint
-
-# Run include-what-you-use
-[group: 'lint']
-iwyu: configure
-    cmake --build {{build_dir}} --target iwyu
-
-# Run clang-tidy static analysis
-[group: 'lint']
-tidy: configure
-    cmake --build {{build_dir}} --target tidy
-
-# Format code with clang-format
-[group: 'format']
-format: configure
-    cmake --build {{build_dir}} --target format
-
-# Quick verification (format + lint + test)
-[group: 'check']
-check: format lint test
-    @echo "✅ checks passed"
-
-# Full verification including clang-tidy
-[group: 'check']
-check-full: format lint tidy test
-    @echo "✅ full checks passed"
+smoke:
+    just compiler={{compiler}} type={{type}} build_dir={{build_dir}} exe={{exe}} app::smoke
