@@ -49,12 +49,25 @@
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++"
       }
+    },
+    {
+      "name": "headless-gcc",
+      "inherits": "debug-gcc",
+      "displayName": "Headless Debug (GCC)",
+      "cacheVariables": {
+        "SDL_X11": "OFF",
+        "SDL_WAYLAND": "OFF",
+        "SDL_OPENGL": "OFF",
+        "SDL_OPENGLES": "OFF",
+        "SDL_UNIX_CONSOLE_BUILD": "ON"
+      }
     }
   ],
   "buildPresets": [
     {"name": "debug-clang", "configurePreset": "debug-clang"},
     {"name": "release-clang", "configurePreset": "release-clang"},
     {"name": "debug-gcc", "configurePreset": "debug-gcc"},
-    {"name": "release-gcc", "configurePreset": "release-gcc"}
+    {"name": "release-gcc", "configurePreset": "release-gcc"},
+    {"name": "headless-gcc", "configurePreset": "headless-gcc"}
   ]
 }
