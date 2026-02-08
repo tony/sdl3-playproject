@@ -73,7 +73,7 @@ sudo apt install -y \
 
 Format commit messages as:
 ```
-commit-type(Component/File[Subcomponent/method]) Concise description
+type(scope[detail]) concise description
 
 why: Explanation of necessity or impact.
 what:
@@ -94,4 +94,6 @@ Common commit types:
 - **style**: Code style and formatting
 - **js(deps)**: Dependencies
 - **js(deps[dev])**: Dev Dependencies
-- **ai(rules[LLM type])**: AI Rule Updates
+- **ai(rules[AGENTS])**: AI rule updates
+- **ai(claude[rules])**: Claude Code rules (CLAUDE.md)
+- **ai(claude[command])**: Claude Code command changes
