@@ -76,10 +76,15 @@ Format commit messages as:
 commit-type(Component/File[Subcomponent/method]) Concise description
 
 why: Explanation of necessity or impact.
+
 what:
 - Specific technical changes made
 - Focused on a single topic
 ```
+
+Keep the subject ≤50 chars (excluding any trailing `(#NN)` PR ref); wrap
+body lines at ≤72 chars. Separate the `why:` and `what:` blocks with a
+blank line.
 
 Commit titles start with a **lowercase** commit type. Use uppercase only for
 properly-capitalized identifiers (e.g. class names) inside the scope.
